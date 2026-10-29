@@ -1,11 +1,11 @@
-# Biblioteca — evolução SaaS, fase 01
+# Biblioteca — evolução SaaS, fase 02
 
 Tópicos Especiais em Engenharia de Software II · Ifes 2026.2
 
-A branch `saas-evolution/fase01` implementa a
-[aula de PostgreSQL, Docker e React](.docs/saas-evolution/saas-fase01.html).
-O monólito modular da fase 53 usa PostgreSQL 18 e oferece uma interface React 19
-para cadastrar e buscar livros por ISBN, título ou autor.
+A branch `saas-evolution/fase02` parte da `saas-evolution/fase01`, que implementou a
+[aula de PostgreSQL, Docker e React](.docs/saas-evolution/saas-fase01.html)
+e os 23 casos de uso da turma. O monólito modular usa PostgreSQL 18 e uma
+interface React 19 com acervo, autores, leitores, exemplares, reservas e empréstimos.
 
 ## Executar a aplicação
 
@@ -92,38 +92,24 @@ O cadastro recebe `isbn`, `titulo` e `autorId`. Os autores da carga inicial são
 - `frontend/`: React, React Router, Vite e CSS.
 - `infra/`: Compose, Dockerfile e `Dockerfile.dockerignore`.
 - `.docs/saas-evolution/`: aulas da evolução SaaS.
-- `.docs/atividades/`: atividades complementares.
 
-O [tutorial original](.docs/modular-monolith.html) percorre as 53 fases até o
-monólito modular. Os estados anteriores estão nas branches
+O tutorial original do monólito modular está nas branches
 `modular-monolith/fase01` a `modular-monolith/fase53`.
 
 O Compose usa a raiz do repositório como contexto de build para incluir
 `backend/` e `frontend/`. O ignore específico `infra/Dockerfile.dockerignore`
 filtra esse contexto. O nome do projeto continua sendo `biblioteca-tutorial`.
 
-## Atividades da turma: 23 casos de uso
+## Casos de uso da fase 01
 
-Abra o [índice dos tutoriais](.docs/use-cases/index.html) no navegador.
-O [painel de andamento](.docs/use-cases/painel.html) mostra os 23 casos em ordem
-de implementação, com pré-requisitos imediatos e quatro estados editáveis.
-Cabe em 1280 × 800, salva neste navegador e permite exportar/importar o progresso.
-Cada documento inclui os pré-requisitos, código completo de backend e React,
-testes e o fluxo de entrega por PR. Os alunos trabalham em forks pessoais,
-em branches `uc01` a `uc23`, com destino a `saas-evolution/fase01`.
+Os 23 casos de uso foram implementados pela turma em `saas-evolution/fase01`.
+Os tutoriais, o painel de andamento e o script de preparação das atividades
+continuam disponíveis nessa branch, em `.docs/use-cases/`.
 
-Antes de começar uma atividade, o comando abaixo verifica se seus pré-requisitos
-já foram integrados pelo professor e cria a branch a partir da base atualizada:
-
-```bash
-bun .docs/use-cases/preparar.ts uc05
-```
-
-Troque `uc05` pela atividade atribuída. Somente `maroquio` pode atualizar ou
-integrar PRs na branch central. A implementação completa dos 23 casos está
-integrada em `saas-evolution/fase01`.
+Cada caso registra sua API em `backend/src/use-cases/ucNN.ts` e sua tela em
+`frontend/src/use-cases/ucNN.tsx`, com testes em `backend/tests/ucNN.test.ts`.
+Somente `maroquio` pode atualizar ou integrar PRs nas branches centrais.
 
 O UC23 implementa um seed manual e idempotente. Abra
 `/livros/seed` ou execute `docker compose -f infra/compose.yaml exec -T app bun src/seed.ts`.
-O catálogo tem fontes bibliográficas; os leitores são fictícios. A distribuição
-de circulação é descrita no [tutorial UC23](.docs/use-cases/uc23.html).
+O catálogo tem fontes bibliográficas; os leitores são fictícios.
