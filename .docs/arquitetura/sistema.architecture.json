@@ -234,7 +234,7 @@
       "title": "Frontend",
       "items": [
         "React 19 + React Router 7, build pelo Vite",
-        "Telas ucNN.tsx descobertas por import.meta.glob"
+        "Telas features/<fatia>/page.tsx descobertas por import.meta.glob"
       ]
     },
     {

@@ -1,55 +1,48 @@
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import BuscarLivros from "./pages/BuscarLivros.tsx";
-import CadastrarLivro from "./pages/CadastrarLivro.tsx";
-import type { PaginaCasoUso } from "./components/biblioteca.tsx";
+import type { FeaturePage } from "./shared/featurePage.ts";
 
-// Cada aluno acrescenta seu arquivo ucXX.tsx; não há menu ou roteador para disputar.
-const modulos = import.meta.glob<{ default: PaginaCasoUso }>("./use-cases/uc[0-9][0-9].tsx", { eager: true });
-const paginas = Object.values(modulos).map((modulo) => modulo.default).sort((a, b) => a.id.localeCompare(b.id));
-const grupos = [
-  { caminho: "/livros", titulo: "Livros" },
-  { caminho: "/autores", titulo: "Autores" },
-  { caminho: "/leitores", titulo: "Leitores" },
-  { caminho: "/exemplares", titulo: "Exemplares" },
-  { caminho: "/reservas", titulo: "Reservas" },
-  { caminho: "/emprestimos", titulo: "Empréstimos" },
+// Cada fatia acrescenta seu page.tsx; não há menu ou roteador para disputar.
+const loaded = import.meta.glob<{ default: FeaturePage }>(["./modules/*/features/*/page.tsx", "./integration/*/page.tsx"], { eager: true });
+const pages = Object.values(loaded).map((module) => module.default).sort((a, b) => a.useCase.localeCompare(b.useCase));
+const areas = [
+  { path: "/livros", title: "Livros" },
+  { path: "/autores", title: "Autores" },
+  { path: "/leitores", title: "Leitores" },
+  { path: "/exemplares", title: "Exemplares" },
+  { path: "/reservas", title: "Reservas" },
+  { path: "/emprestimos", title: "Empréstimos" },
 ];
 
 export default function App() {
-  const localizacao = useLocation();
-  const caminhoAtual = localizacao.pathname === "/" || localizacao.pathname === "/cadastrar" ? "/livros" : localizacao.pathname;
-  const grupoAtual = grupos.find((grupo) => caminhoAtual.startsWith(grupo.caminho));
-  const atividades = paginas.filter((pagina) => pagina.caminho.startsWith(grupoAtual?.caminho ?? "/livros"));
-  const temBuscaLivros = paginas.some((pagina) => pagina.id === "uc02");
-  const temCadastroLivro = paginas.some((pagina) => pagina.id === "uc01");
+  const location = useLocation();
+  const currentArea = areas.find((area) => location.pathname.startsWith(area.path)) ?? areas[0]!;
+  const activities = pages.filter((page) => page.path.startsWith(currentArea.path));
   return (
     <>
-      <a className="pular-conteudo" href="#conteudo">Ir para o conteúdo</a>
-      <header className="topo">
-        <div className="identidade"><Link className="marca" to="/">Biblioteca</Link><span>Acervo e circulação</span></div>
+      <a className="skip-link" href="#content">Ir para o conteúdo</a>
+      <header className="top-bar">
+        <div className="identity"><Link className="brand" to="/">Biblioteca</Link><span>Acervo e circulação</span></div>
         <nav aria-label="Áreas da biblioteca">
-          {grupos.filter((grupo) => grupo.caminho === "/livros" || paginas.some((pagina) => pagina.caminho.startsWith(grupo.caminho))).map((grupo) => {
-            const inicio = paginas.find((pagina) => pagina.caminho === grupo.caminho)?.caminho ?? paginas.find((pagina) => pagina.caminho.startsWith(grupo.caminho))?.caminho ?? "/";
-            return <Link key={grupo.caminho} to={inicio} className={grupoAtual?.caminho === grupo.caminho ? "active" : ""} aria-current={grupoAtual?.caminho === grupo.caminho ? "true" : undefined}>{grupo.titulo}</Link>;
+          {areas.filter((area) => pages.some((page) => page.path.startsWith(area.path))).map((area) => {
+            const start = pages.find((page) => page.path === area.path)?.path ?? pages.find((page) => page.path.startsWith(area.path))!.path;
+            return <Link key={area.path} to={start} className={currentArea.path === area.path ? "active" : ""} aria-current={currentArea.path === area.path ? "true" : undefined}>{area.title}</Link>;
           })}
         </nav>
       </header>
-      <div className="faixa-atividades">
-        <nav className="atividades" aria-label={`Atividades de ${grupoAtual?.titulo ?? "livros"}`}>
-          {atividades.map((pagina) => <NavLink key={pagina.id} to={pagina.caminho} end>{pagina.titulo}</NavLink>)}
-          {!temBuscaLivros && grupoAtual?.caminho === "/livros" && <NavLink to="/" end>Buscar livros</NavLink>}
-          {!temCadastroLivro && grupoAtual?.caminho === "/livros" && <NavLink to="/cadastrar">Cadastrar livro</NavLink>}
+      <div className="activities-bar">
+        <nav className="activities" aria-label={`Atividades de ${currentArea.title}`}>
+          {activities.map((page) => <NavLink key={page.path} to={page.path} end>{page.title}</NavLink>)}
         </nav>
       </div>
-      <main className="conteudo" id="conteudo">
+      <main className="content" id="content">
         <Routes>
-          {paginas.map(({ id, caminho, Componente }) => <Route key={id} path={caminho} element={<Componente />} />)}
-          <Route path="/" element={temBuscaLivros ? <Navigate to={`/livros${localizacao.search}`} replace /> : <BuscarLivros />} />
-          <Route path="/cadastrar" element={temCadastroLivro ? <Navigate to={`/livros/cadastrar${localizacao.search}`} replace /> : <CadastrarLivro />} />
+          {pages.map(({ path, Component }) => <Route key={path} path={path} element={<Component />} />)}
+          <Route path="/" element={<Navigate to={`/livros${location.search}`} replace />} />
+          <Route path="/cadastrar" element={<Navigate to={`/livros/cadastrar${location.search}`} replace />} />
           <Route path="*" element={<><h1>Página não encontrada</h1><p>Use o menu para escolher uma atividade disponível.</p><Link to="/">Voltar ao acervo</Link></>} />
         </Routes>
       </main>
-      <footer className="rodape">Biblioteca · Gestão do acervo e atendimento ao leitor</footer>
+      <footer className="footer">Biblioteca · Gestão do acervo e atendimento ao leitor</footer>
     </>
   );
 }

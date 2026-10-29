@@ -1,4 +1,5 @@
 import { Glob } from "bun";
+import { existsSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
 
 const problems: string[] = [];
@@ -56,6 +57,40 @@ for await (const rawFile of new Glob("src/modules/**/*.ts").scan(".")) {
       problems.push(
         `${file}\n      toca a tabela "${table}", que pertence a ${owner}`,
       );
+    }
+  }
+}
+
+/**
+ * O frontend segue as mesmas fronteiras: uma tela (page.tsx) não importa outra
+ * e um módulo só usa outro pelo index.ts. Caminhos relativos à pasta frontend/.
+ */
+const FRONTEND = "../frontend";
+
+if (existsSync(FRONTEND)) {
+  for await (const rawFile of new Glob("src/modules/**/*.{ts,tsx}").scan(FRONTEND)) {
+    const file = rawFile.replaceAll("\\", "/");
+    const module = file.split("/")[2]!;
+    const slice = sliceOf(file);
+    const code = await Bun.file(join(FRONTEND, file)).text();
+
+    for (const found of code.matchAll(/from\s+"(\.[^"]+)"/g)) {
+      const target = normalize(join(dirname(file), found[1]!)).replaceAll("\\", "/");
+
+      if (!target.startsWith("src/modules/")) continue;
+
+      const otherModule = target.split("/")[2]!;
+      if (otherModule !== module) {
+        if (target !== `src/modules/${otherModule}/index.ts`) {
+          problems.push(`frontend/${file}\n      importa ${target}`);
+        }
+        continue;
+      }
+
+      const targetSlice = sliceOf(target);
+      if (targetSlice && targetSlice !== slice) {
+        problems.push(`frontend/${file}\n      importa a fatia ${targetSlice}`);
+      }
     }
   }
 }

@@ -126,9 +126,8 @@ Os 23 casos de uso foram implementados pela turma em `saas-evolution/fase01`.
 Os tutoriais, o painel de andamento e o script de preparação das atividades
 continuam disponíveis nessa branch, em `.docs/use-cases/`.
 
-Cada caso registra sua tela em `frontend/src/use-cases/ucNN.tsx`. No backend,
-cada caso é uma fatia dentro do seu módulo (próxima seção), e cada caso de teste
-cita a UC no título.
+Cada caso é uma fatia dentro do seu módulo, tanto no backend quanto no frontend
+(próximas seções), e cada caso de teste cita a UC no título.
 Somente `maroquio` pode atualizar ou integrar PRs nas branches centrais.
 
 O UC23 implementa um seed manual e idempotente. Abra
@@ -159,7 +158,8 @@ Os módulos são `catalog` (livros e exemplares), `authorship` (autores), `reade
 (leitores) e `circulation` (reservas e empréstimos). O `composition.ts` descobre
 cada `features/<fatia>/route.ts`, então adicionar uma fatia não altera nenhum
 registro central. `bun run check-boundaries` barra import entre fatias, import de
-arquivos internos de outro módulo e SQL em tabela de outro módulo.
+arquivos internos de outro módulo e SQL em tabela de outro módulo. As mesmas
+regras de import valem para o frontend.
 
 Os testes de cada fatia ficam ao lado dela (`<fatia>.test.ts`); `backend/tests/`
 guarda o suporte compartilhado (importado como `#tests/...`) e os testes que sobem
@@ -190,6 +190,29 @@ a aplicação inteira.
 | UC21 | `circulation/features/list-loans` | `GET /emprestimos`, `GET /emprestimos/:id` |
 | UC22 | `circulation/features/list-reservations` | `GET /reservas`, `GET /reservas/:id` |
 | UC23 | `integration/seed` | `GET /seed`, `POST /seed` |
+
+## Organização do frontend
+
+O frontend segue os mesmos módulos e a mesma regra de idioma: código em inglês;
+URLs das telas, campos JSON da API, textos da interface e comentários em português.
+
+```
+frontend/src/
+├── main.tsx · App.tsx · index.css     entrada, casca (menu e rotas) e estilos
+├── shared/                            api, formatação, useFetch e componentes de UI
+├── integration/seed/page.tsx          tela de dados de exemplo (UC23)
+└── modules/<módulo>/
+    ├── index.ts                       tipos públicos para os outros módulos
+    ├── types.ts                       tipos do JSON da API
+    ├── components/                    campos compartilhados entre as telas do módulo
+    └── features/<fatia>/page.tsx      uma tela por caso de uso
+```
+
+Cada `page.tsx` exporta `{ useCase, title, path, Component }`. O `App.tsx` descobre
+as telas por `import.meta.glob`, ordena o menu pela UC e agrupa as atividades pela
+área da URL. As fatias têm os mesmos nomes do backend: a tela do UC01 fica em
+`modules/catalog/features/create-book/page.tsx`, a do UC17 em
+`modules/circulation/features/reserve-copy/page.tsx`.
 
 A importação em lote de livros por CSV continua disponível com
 `bun run import-books <arquivo.csv>` (cabeçalho `isbn,titulo,autorId`).
