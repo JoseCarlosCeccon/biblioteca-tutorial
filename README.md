@@ -127,7 +127,9 @@ Os tutoriais, o painel de andamento e o script de preparação das atividades
 continuam disponíveis nessa branch, em `.docs/use-cases/`.
 
 Cada caso registra sua API em `backend/src/use-cases/ucNN.ts` e sua tela em
-`frontend/src/use-cases/ucNN.tsx`, com testes em `backend/tests/ucNN.test.ts`.
+`frontend/src/use-cases/ucNN.tsx`. Os testes ficam em `backend/tests/`, nomeados
+pela ação testada (`reservar-exemplar.test.ts`, por exemplo), e cada caso de teste
+cita a UC no título.
 Somente `maroquio` pode atualizar ou integrar PRs nas branches centrais.
 
 O UC23 implementa um seed manual e idempotente. Abra
