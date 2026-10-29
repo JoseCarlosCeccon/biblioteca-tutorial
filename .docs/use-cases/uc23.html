@@ -1932,7 +1932,7 @@ function GerarDadosDeExemplo() {
 }
 
 export default { id: &quot;uc23&quot;, titulo: &quot;Gerar dados de exemplo&quot;, caminho: &quot;/livros/seed&quot;, Componente: GerarDadosDeExemplo };
-</code></pre></div><p>Depois do build, abra <a href="http://localhost:3000/livros/seed">http://localhost:3000/livros/seed</a>. Confirme envio, carregamento, resultado, entrada inválida e mensagem de erro. Recarregue a página diretamente para conferir a rota do navegador.</p></section><section class="secao" id="testes"><h2>Escrever e executar os testes</h2><p>Os fixtures usam registros próprios e retornam os IDs reais criados durante o teste. As regras de datas e limites também são exercitadas com relógio ou repositórios controlados quando aplicável. Copie os arquivos completos:</p><h3>Crie <code>backend/tests/uc23.test.ts</code></h3><p>Copie o conteúdo integral abaixo para esse arquivo. Crie as pastas necessárias. Se o arquivo já estiver idêntico por uma atividade anterior, mantenha-o.</p><div class="bloco" data-source="backend/tests/uc23.test.ts"><div class="barra"><span>backend/tests/uc23.test.ts</span><button type="button" data-copy aria-label="Copiar backend/tests/uc23.test.ts">Copiar</button></div><pre><code>import { expect, test } from &quot;bun:test&quot;;
+</code></pre></div><p>Depois do build, abra <a href="http://localhost:3000/livros/seed">http://localhost:3000/livros/seed</a>. Confirme envio, carregamento, resultado, entrada inválida e mensagem de erro. Recarregue a página diretamente para conferir a rota do navegador.</p></section><section class="secao" id="testes"><h2>Escrever e executar os testes</h2><p>Os fixtures usam registros próprios e retornam os IDs reais criados durante o teste. As regras de datas e limites também são exercitadas com relógio ou repositórios controlados quando aplicável. Copie os arquivos completos:</p><h3>Crie <code>backend/tests/uc23.test.ts</code></h3><p>Copie o conteúdo integral abaixo para esse arquivo. Crie as pastas necessárias. Se o arquivo já estiver idêntico por uma atividade anterior, mantenha-o.</p><div class="bloco" data-source="backend/tests/uc23.test.ts"><div class="barra"><span>backend/tests/uc23.test.ts</span><button type="button" data-copy aria-label="Copiar backend/tests/uc23.test.ts">Copiar</button></div><pre><code>import { afterAll, beforeAll, expect, test } from &quot;bun:test&quot;;
 import { api, autorDeTeste, exemplarDeTeste } from &quot;./suporte-api&quot;;
 import { sql } from &quot;../src/infrastructure/postgres&quot;;
 import { executarSeed } from &quot;../src/seed/executar&quot;;
@@ -1940,10 +1940,28 @@ import { cpfFicticio, VERSAO_SEED, type CatalogoSeed } from &quot;../src/seed/mo
 import { leitorDeTeste } from &quot;./leitoresApiFixture&quot;;
 import { relatorioSeed } from &quot;../src/seed/relatorio&quot;;
 import { normalizarCpf } from &quot;../src/modules/leitores/domain/Leitor&quot;;
+import { prepararSeed } from &quot;../src/seed/preparar&quot;;
+import { emTransacao } from &quot;../src/infrastructure/transaction&quot;;
+import { limparAcervoDeTeste } from &quot;./limpar-acervo-teste&quot;;
 
 if (!new URL(process.env.DATABASE_URL!).pathname.endsWith(&quot;_test&quot;)) {
   throw new Error(&quot;UC23 exige um banco de testes cujo nome termine em _test.&quot;);
 }
+
+// A suíte legada zera o acervo (inclusive o do seed) e deixa livros de autores do catálogo.
+// Recomeçar e desfazer a carga torna o resultado independente da ordem das suítes.
+async function reiniciarSeed() {
+  await limparAcervoDeTeste();
+  await prepararSeed(sql);
+  await emTransacao(async tx =&gt; {
+    await tx`DELETE FROM leitores WHERE id IN (SELECT registro_id FROM seed_registros WHERE entidade = &#x27;leitores&#x27;)`;
+    await tx`DELETE FROM seed_registros`;
+    await tx`DELETE FROM seed_execucoes`;
+    await tx`UPDATE autores SET livros_no_acervo = 0`;
+  });
+}
+beforeAll(reiniciarSeed);
+afterAll(reiniciarSeed);
 
 test(&quot;UC23: conflito tardio de ISBN reverte toda a execução sem apagar dados existentes&quot;, async () =&gt; {
   if ((await relatorioSeed(sql)).executado) return; // Esta prova exige a primeira execução no banco dedicado.
@@ -1959,7 +1977,7 @@ test(&quot;UC23: conflito tardio de ISBN reverte toda a execução sem apagar da
   await sql`DELETE FROM livros WHERE id = ${conflito!.id}`;
 });
 
-// Esta suíte cria apenas seus dados. Rode em biblioteca_uc23_test, nunca no banco da aula.
+// Esta suíte reinicia o acervo e a carga do seed. Rode em biblioteca_test, nunca no banco da aula.
 test(&quot;UC23: seed atômico, idempotente, completo e coerente com os limites e o histórico&quot;, async () =&gt; {
   const banco = new URL(process.env.DATABASE_URL!).pathname;
   expect(banco.endsWith(&quot;_test&quot;)).toBe(true);
