@@ -1,5 +1,6 @@
 import { invalidateAuthorSearch } from "../modules/authorship";
 import type { CatalogAuthor, CatalogDb, CatalogIntegration } from "../modules/catalog";
+import { invalidateBookList } from "../modules/catalog/infrastructure/listBooksCache";
 
 async function tableExists(db: CatalogDb, name: string): Promise<boolean> {
   const [row] = await db`SELECT to_regclass(${'public.' + name}) IS NOT NULL AS "exists"` as { exists: boolean }[];
@@ -24,6 +25,7 @@ export const catalogIntegration: CatalogIntegration = {
   async bookCountsChanged() {
     // a busca de autores mostra livrosNoAcervo: qualquer mudança invalida a geração inteira
     await invalidateAuthorSearch();
+    await invalidateBookList();
   },
   async copyAvailability(db, copyId, today) {
     if (await tableExists(db, "emprestimos")) {
