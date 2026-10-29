@@ -4840,7 +4840,7 @@
       </div>
     </div>
 
-    <script id="archify-guided-views-data" type="application/json">[{"id":"fatia-circulacao","label":"Uma fatia de ponta a ponta","focus":["api","uc-circ","mod-circ","adapters","pg"],"note":"POST /emprestimos: uc19 abre a transação e monta RegistrarEmprestimo com dependências do adapter."},{"id":"modulos","label":"Módulos de domínio","focus":["mod-acervo","mod-autoria","mod-leitores","mod-circ"],"note":"Cada módulo é dono das suas tabelas; check-boundaries.ts barra imports e SQL cruzados."},{"id":"integracao","label":"Integração entre módulos","focus":["adapters","pg","uc-circ"],"note":"SQL que atravessa módulos fica em src/adapters, nunca dentro dos módulos."}]</script>
+    <script id="archify-guided-views-data" type="application/json">[{"id":"fatia-circulacao","label":"Uma fatia de ponta a ponta","focus":["api","uc-circ","mod-circ","adapters","pg"],"note":"POST /emprestimos: register-loan/route.ts abre inTransaction e monta RegisterLoan com circulationDependencies."},{"id":"modulos","label":"Módulos de domínio","focus":["mod-acervo","mod-autoria","mod-leitores","mod-circ"],"note":"Cada módulo é dono das suas tabelas; check-boundaries.ts barra imports e SQL cruzados."},{"id":"integracao","label":"Integração entre módulos","focus":["adapters","pg","uc-circ"],"note":"SQL que atravessa módulos fica em src/integration, nunca dentro dos módulos."}]</script>
 
     <div class="guided-views no-print" id="guided-views" hidden aria-label="Guided diagram views">
       <button id="guided-view-prev" type="button" aria-label="Previous guided view" title="Previous guided view ([)">&#8592;</button>
@@ -4910,16 +4910,16 @@
 
         <!-- Boundaries (behind everything) -->
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" x="30" y="220" width="260" height="264" rx="12" class="c-region" stroke-width="1"/>
-        <text x="38" y="238" class="t-cloud" font-size="9" font-weight="600">Acervo</text>
+        <text x="38" y="238" class="t-cloud" font-size="9" font-weight="600">Acervo · catalog</text>
 
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="1" x="300" y="220" width="260" height="264" rx="12" class="c-region" stroke-width="1"/>
-        <text x="308" y="238" class="t-cloud" font-size="9" font-weight="600">Autoria</text>
+        <text x="308" y="238" class="t-cloud" font-size="9" font-weight="600">Autoria · authorship</text>
 
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="2" x="570" y="220" width="260" height="264" rx="12" class="c-region" stroke-width="1"/>
-        <text x="578" y="238" class="t-cloud" font-size="9" font-weight="600">Leitores</text>
+        <text x="578" y="238" class="t-cloud" font-size="9" font-weight="600">Leitores · readers</text>
 
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="3" x="840" y="220" width="260" height="264" rx="12" class="c-region" stroke-width="1"/>
-        <text x="848" y="238" class="t-cloud" font-size="9" font-weight="600">Circulação</text>
+        <text x="848" y="238" class="t-cloud" font-size="9" font-weight="600">Circulação · circulation</text>
 
         <!-- Connection paths (before components for correct z-order) -->
         <path data-edge-from="api" data-edge-to="uc-acervo" data-edge-key="0" data-edge-id="api-acervo" data-composition-points="544,134;544,192;160,192;160,250" d="M 544 134 L 544 184 Q 544 192 536 192 L 168 192 Q 160 192 160 200 L 160 250" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
@@ -4938,20 +4938,20 @@
         <path data-edge-from="adapters" data-edge-to="pg" data-edge-label="consultas cruzadas" data-edge-key="13" data-edge-id="adapters-pg" data-composition-points="1140,439;1116,439;1116,612;665,612" d="M 1140 439 L 1124 439 Q 1116 439 1116 447 L 1116 604 Q 1116 612 1108 612 L 665 612" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
 
         <!-- Components -->
-        <g id="node-api" data-node-id="api" data-node-label="Hono /api" tabindex="0" role="button" aria-label="Focus Hono /api, server.ts · loader.ts, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="server.ts · loader.ts" data-node-tag="descobre ucNN.ts" data-node-context="Architecture component">
-          <title>Hono /api · server.ts · loader.ts · Architecture component · descobre ucNN.ts</title>
+        <g id="node-api" data-node-id="api" data-node-label="Hono /api" tabindex="0" role="button" aria-label="Focus Hono /api, server.ts · composition.ts, Architecture component" aria-pressed="false" data-node-kind="backend" data-node-sublabel="server.ts · composition.ts" data-node-tag="loadSlices → route.ts" data-node-context="Architecture component">
+          <title>Hono /api · server.ts · composition.ts · Architecture component · loadSlices → route.ts</title>
           <rect x="465" y="70" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="465" y="70" width="200" height="64" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(471 76) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
           <text data-detail-anchor x="565" y="100" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Hono /api</text>
-        <text data-detail="context" x="565" y="116" class="t-muted" font-size="9" text-anchor="middle">server.ts · loader.ts</text>
-        <text data-detail="fine" x="565" y="126" class="t-backend" font-size="7" text-anchor="middle">descobre ucNN.ts</text>
+        <text data-detail="context" x="565" y="116" class="t-muted" font-size="9" text-anchor="middle">server.ts · composition.ts</text>
+        <text data-detail="fine" x="565" y="126" class="t-backend" font-size="7" text-anchor="middle">loadSlices → route.ts</text>
         </g>
 
-        <g id="node-uc-acervo" data-node-id="uc-acervo" data-node-label="Fatias de Acervo" tabindex="0" role="button" aria-label="Focus Fatias de Acervo, uc01–04 · uc13–16, Acervo" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="uc01–04 · uc13–16" data-node-context="Acervo">
-          <title>Fatias de Acervo · uc01–04 · uc13–16 · Acervo</title>
+        <g id="node-uc-acervo" data-node-id="uc-acervo" data-node-label="catalog/features" tabindex="0" role="button" aria-label="Focus catalog/features, UC01–04 · UC13–16, Acervo · catalog" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="UC01–04 · UC13–16" data-node-context="Acervo · catalog">
+          <title>catalog/features · UC01–04 · UC13–16 · Acervo · catalog</title>
           <rect x="60" y="250" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="60" y="250" width="200" height="64" rx="6" class="c-frontend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(66 256) scale(0.6875)">
@@ -4960,12 +4960,12 @@
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-detail-anchor x="160" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Fatias de Acervo</text>
-        <text data-detail="context" x="160" y="296" class="t-muted" font-size="9" text-anchor="middle">uc01–04 · uc13–16</text>
+          <text data-detail-anchor x="160" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">catalog/features</text>
+        <text data-detail="context" x="160" y="296" class="t-muted" font-size="9" text-anchor="middle">UC01–04 · UC13–16</text>
         </g>
 
-        <g id="node-uc-autoria" data-node-id="uc-autoria" data-node-label="Fatias de Autoria" tabindex="0" role="button" aria-label="Focus Fatias de Autoria, uc05–08, Autoria" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="uc05–08" data-node-context="Autoria">
-          <title>Fatias de Autoria · uc05–08 · Autoria</title>
+        <g id="node-uc-autoria" data-node-id="uc-autoria" data-node-label="authorship/features" tabindex="0" role="button" aria-label="Focus authorship/features, UC05–08, Autoria · authorship" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="UC05–08" data-node-context="Autoria · authorship">
+          <title>authorship/features · UC05–08 · Autoria · authorship</title>
           <rect x="330" y="250" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="330" y="250" width="200" height="64" rx="6" class="c-frontend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(336 256) scale(0.6875)">
@@ -4974,12 +4974,12 @@
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-detail-anchor x="430" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Fatias de Autoria</text>
-        <text data-detail="context" x="430" y="296" class="t-muted" font-size="9" text-anchor="middle">uc05–08</text>
+          <text data-detail-anchor x="430" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">authorship/features</text>
+        <text data-detail="context" x="430" y="296" class="t-muted" font-size="9" text-anchor="middle">UC05–08</text>
         </g>
 
-        <g id="node-uc-leitores" data-node-id="uc-leitores" data-node-label="Fatias de Leitores" tabindex="0" role="button" aria-label="Focus Fatias de Leitores, uc09–12, Leitores" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="uc09–12" data-node-context="Leitores">
-          <title>Fatias de Leitores · uc09–12 · Leitores</title>
+        <g id="node-uc-leitores" data-node-id="uc-leitores" data-node-label="readers/features" tabindex="0" role="button" aria-label="Focus readers/features, UC09–12, Leitores · readers" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="UC09–12" data-node-context="Leitores · readers">
+          <title>readers/features · UC09–12 · Leitores · readers</title>
           <rect x="600" y="250" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="600" y="250" width="200" height="64" rx="6" class="c-frontend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(606 256) scale(0.6875)">
@@ -4988,12 +4988,12 @@
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-detail-anchor x="700" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Fatias de Leitores</text>
-        <text data-detail="context" x="700" y="296" class="t-muted" font-size="9" text-anchor="middle">uc09–12</text>
+          <text data-detail-anchor x="700" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">readers/features</text>
+        <text data-detail="context" x="700" y="296" class="t-muted" font-size="9" text-anchor="middle">UC09–12</text>
         </g>
 
-        <g id="node-uc-circ" data-node-id="uc-circ" data-node-label="Fatias de Circulação" tabindex="0" role="button" aria-label="Focus Fatias de Circulação, uc17–22, Circulação" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="uc17–22" data-node-context="Circulação">
-          <title>Fatias de Circulação · uc17–22 · Circulação</title>
+        <g id="node-uc-circ" data-node-id="uc-circ" data-node-label="circulation/features" tabindex="0" role="button" aria-label="Focus circulation/features, UC17–22, Circulação · circulation" aria-pressed="false" data-node-kind="frontend" data-node-sublabel="UC17–22" data-node-context="Circulação · circulation">
+          <title>circulation/features · UC17–22 · Circulação · circulation</title>
           <rect x="870" y="250" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="870" y="250" width="200" height="64" rx="6" class="c-frontend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="frontend" class="semantic-sigil s-frontend" transform="translate(876 256) scale(0.6875)">
@@ -5002,56 +5002,56 @@
             <circle cx="4.1" cy="4.8" r=".7" class="sigil-fill"/>
             <circle cx="6.3" cy="4.8" r=".7" class="sigil-fill"/>
           </g>
-          <text data-detail-anchor x="970" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Fatias de Circulação</text>
-        <text data-detail="context" x="970" y="296" class="t-muted" font-size="9" text-anchor="middle">uc17–22</text>
+          <text data-detail-anchor x="970" y="280" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">circulation/features</text>
+        <text data-detail="context" x="970" y="296" class="t-muted" font-size="9" text-anchor="middle">UC17–22</text>
         </g>
 
-        <g id="node-mod-acervo" data-node-id="mod-acervo" data-node-label="modules/acervo" tabindex="0" role="button" aria-label="Focus modules/acervo, livros · exemplares, Acervo" aria-pressed="false" data-node-kind="backend" data-node-sublabel="livros · exemplares" data-node-context="Acervo">
-          <title>modules/acervo · livros · exemplares · Acervo</title>
+        <g id="node-mod-acervo" data-node-id="mod-acervo" data-node-label="modules/catalog" tabindex="0" role="button" aria-label="Focus modules/catalog, livros · exemplares, Acervo · catalog" aria-pressed="false" data-node-kind="backend" data-node-sublabel="livros · exemplares" data-node-context="Acervo · catalog">
+          <title>modules/catalog · livros · exemplares · Acervo · catalog</title>
           <rect x="60" y="400" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="60" y="400" width="200" height="64" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(66 406) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-detail-anchor x="160" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/acervo</text>
+          <text data-detail-anchor x="160" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/catalog</text>
         <text data-detail="context" x="160" y="446" class="t-muted" font-size="9" text-anchor="middle">livros · exemplares</text>
         </g>
 
-        <g id="node-mod-autoria" data-node-id="mod-autoria" data-node-label="modules/autoria" tabindex="0" role="button" aria-label="Focus modules/autoria, autores, Autoria" aria-pressed="false" data-node-kind="backend" data-node-sublabel="autores" data-node-context="Autoria">
-          <title>modules/autoria · autores · Autoria</title>
+        <g id="node-mod-autoria" data-node-id="mod-autoria" data-node-label="modules/authorship" tabindex="0" role="button" aria-label="Focus modules/authorship, autores, Autoria · authorship" aria-pressed="false" data-node-kind="backend" data-node-sublabel="autores" data-node-context="Autoria · authorship">
+          <title>modules/authorship · autores · Autoria · authorship</title>
           <rect x="330" y="400" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="330" y="400" width="200" height="64" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(336 406) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-detail-anchor x="430" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/autoria</text>
+          <text data-detail-anchor x="430" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/authorship</text>
         <text data-detail="context" x="430" y="446" class="t-muted" font-size="9" text-anchor="middle">autores</text>
         </g>
 
-        <g id="node-mod-leitores" data-node-id="mod-leitores" data-node-label="modules/leitores" tabindex="0" role="button" aria-label="Focus modules/leitores, leitores, Leitores" aria-pressed="false" data-node-kind="backend" data-node-sublabel="leitores" data-node-context="Leitores">
-          <title>modules/leitores · leitores · Leitores</title>
+        <g id="node-mod-leitores" data-node-id="mod-leitores" data-node-label="modules/readers" tabindex="0" role="button" aria-label="Focus modules/readers, leitores, Leitores · readers" aria-pressed="false" data-node-kind="backend" data-node-sublabel="leitores" data-node-context="Leitores · readers">
+          <title>modules/readers · leitores · Leitores · readers</title>
           <rect x="600" y="400" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="600" y="400" width="200" height="64" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(606 406) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-detail-anchor x="700" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/leitores</text>
+          <text data-detail-anchor x="700" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/readers</text>
         <text data-detail="context" x="700" y="446" class="t-muted" font-size="9" text-anchor="middle">leitores</text>
         </g>
 
-        <g id="node-mod-circ" data-node-id="mod-circ" data-node-label="modules/circulacao" tabindex="0" role="button" aria-label="Focus modules/circulacao, reservas · emprestimos, Circulação" aria-pressed="false" data-node-kind="backend" data-node-sublabel="reservas · emprestimos" data-node-context="Circulação">
-          <title>modules/circulacao · reservas · emprestimos · Circulação</title>
+        <g id="node-mod-circ" data-node-id="mod-circ" data-node-label="modules/circulation" tabindex="0" role="button" aria-label="Focus modules/circulation, reservas · emprestimos, Circulação · circulation" aria-pressed="false" data-node-kind="backend" data-node-sublabel="reservas · emprestimos" data-node-context="Circulação · circulation">
+          <title>modules/circulation · reservas · emprestimos · Circulação · circulation</title>
           <rect x="870" y="400" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="870" y="400" width="200" height="64" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(876 406) scale(0.6875)">
             <path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>
           </g>
-          <text data-detail-anchor x="970" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/circulacao</text>
+          <text data-detail-anchor x="970" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">modules/circulation</text>
         <text data-detail="context" x="970" y="446" class="t-muted" font-size="9" text-anchor="middle">reservas · emprestimos</text>
         </g>
 
-        <g id="node-adapters" data-node-id="adapters" data-node-label="src/adapters" tabindex="0" role="button" aria-label="Focus src/adapters, SQL entre módulos, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="SQL entre módulos" data-node-context="Architecture component">
-          <title>src/adapters · SQL entre módulos · Architecture component</title>
+        <g id="node-adapters" data-node-id="adapters" data-node-label="src/integration" tabindex="0" role="button" aria-label="Focus src/integration, SQL entre módulos, Architecture component" aria-pressed="false" data-node-kind="messagebus" data-node-sublabel="SQL entre módulos" data-node-context="Architecture component">
+          <title>src/integration · SQL entre módulos · Architecture component</title>
           <rect x="1140" y="400" width="180" height="64" rx="6" class="c-mask"/>
           <rect x="1140" y="400" width="180" height="64" rx="6" class="c-messagebus" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="messagebus" class="semantic-sigil s-messagebus" transform="translate(1146 406) scale(0.6875)">
@@ -5060,12 +5060,12 @@
             <circle cx="10.5" cy="8" r="1" class="sigil-fill"/>
             <circle cx="7" cy="11.5" r="1" class="sigil-fill"/>
           </g>
-          <text data-detail-anchor x="1230" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">src/adapters</text>
+          <text data-detail-anchor x="1230" y="430" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">src/integration</text>
         <text data-detail="context" x="1230" y="446" class="t-muted" font-size="9" text-anchor="middle">SQL entre módulos</text>
         </g>
 
-        <g id="node-pg" data-node-id="pg" data-node-label="PostgreSQL" tabindex="0" role="button" aria-label="Focus PostgreSQL, infrastructure · emTransacao, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="infrastructure · emTransacao" data-node-context="Architecture component">
-          <title>PostgreSQL · infrastructure · emTransacao · Architecture component</title>
+        <g id="node-pg" data-node-id="pg" data-node-label="PostgreSQL" tabindex="0" role="button" aria-label="Focus PostgreSQL, infrastructure · inTransaction, Architecture component" aria-pressed="false" data-node-kind="database" data-node-sublabel="infrastructure · inTransaction" data-node-context="Architecture component">
+          <title>PostgreSQL · infrastructure · inTransaction · Architecture component</title>
           <rect x="465" y="580" width="200" height="64" rx="6" class="c-mask"/>
           <rect x="465" y="580" width="200" height="64" rx="6" class="c-database" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(471 586) scale(0.6875)">
@@ -5073,7 +5073,7 @@
             <path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/>
           </g>
           <text data-detail-anchor x="565" y="610" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">PostgreSQL</text>
-        <text data-detail="context" x="565" y="626" class="t-muted" font-size="9" text-anchor="middle">infrastructure · emTransacao</text>
+        <text data-detail="context" x="565" y="626" class="t-muted" font-size="9" text-anchor="middle">infrastructure · inTransaction</text>
         </g>
 
         <!-- Connection labels -->
@@ -5101,21 +5101,21 @@
         <!-- Legend -->
         <g data-legend data-legend-bridge>
           <text x="40" y="676" class="t-primary" font-size="12" font-weight="650">Legend</text>
-          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Fatia vertical (ucNN.ts)" data-legend-x="40" data-legend-baseline="696" data-legend-width="163">
+          <g data-legend-semantic-kind="frontend" data-legend-kind="frontend" data-legend-label="Fatia vertical (features/*/route.ts)" data-legend-x="40" data-legend-baseline="696" data-legend-width="222">
             <rect x="40" y="687" width="16" height="10" rx="2.5" class="c-frontend" stroke-width="1"/>
-            <text x="62" y="696" class="t-muted" font-size="10" font-weight="500">Fatia vertical (ucNN.ts)</text>
+            <text x="62" y="696" class="t-muted" font-size="10" font-weight="500">Fatia vertical (features/*/route.ts)</text>
           </g>
-          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Módulo / API" data-legend-x="225" data-legend-baseline="696" data-legend-width="103">
-            <rect x="225" y="687" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
-            <text x="247" y="696" class="t-muted" font-size="10" font-weight="500">Módulo / API</text>
+          <g data-legend-semantic-kind="backend" data-legend-kind="backend" data-legend-label="Módulo / API" data-legend-x="284" data-legend-baseline="696" data-legend-width="103">
+            <rect x="284" y="687" width="16" height="10" rx="2.5" class="c-backend" stroke-width="1"/>
+            <text x="306" y="696" class="t-muted" font-size="10" font-weight="500">Módulo / API</text>
           </g>
-          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Database" data-legend-x="350" data-legend-baseline="696" data-legend-width="83">
-            <rect x="350" y="687" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
-            <text x="372" y="696" class="t-muted" font-size="10" font-weight="500">Database</text>
+          <g data-legend-semantic-kind="database" data-legend-kind="database" data-legend-label="Database" data-legend-x="409" data-legend-baseline="696" data-legend-width="83">
+            <rect x="409" y="687" width="16" height="10" rx="2.5" class="c-database" stroke-width="1"/>
+            <text x="431" y="696" class="t-muted" font-size="10" font-weight="500">Database</text>
           </g>
-          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Adapter de integração" data-legend-x="455" data-legend-baseline="696" data-legend-width="148">
-            <rect x="455" y="687" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
-            <text x="477" y="696" class="t-muted" font-size="10" font-weight="500">Adapter de integração</text>
+          <g data-legend-semantic-kind="messagebus" data-legend-kind="messagebus" data-legend-label="Integração entre módulos" data-legend-x="514" data-legend-baseline="696" data-legend-width="163">
+            <rect x="514" y="687" width="16" height="10" rx="2.5" class="c-messagebus" stroke-width="1"/>
+            <text x="536" y="696" class="t-muted" font-size="10" font-weight="500">Integração entre módulos</text>
           </g>
         </g>
       </svg>
@@ -5307,9 +5307,9 @@
           <h3>Fatia vertical</h3>
         </div>
         <ul>
-          <li>&bull; Um arquivo ucNN.ts registra rota e compõe o caso</li>
-          <li>&bull; Adicionar uma UC não altera as demais</li>
-          <li>&bull; uc23 (seed) usa src/seed</li>
+          <li>&bull; Cada features/&lt;fatia&gt;/route.ts exporta registerRoutes</li>
+          <li>&bull; Adicionar uma fatia não altera as demais</li>
+          <li>&bull; integration/seed (UC23) também é uma fatia</li>
         </ul>
       </div>
 
@@ -5319,7 +5319,7 @@
           <h3>Módulo</h3>
         </div>
         <ul>
-          <li>&bull; domain/ + infrastructure/ com repositórios</li>
+          <li>&bull; index.ts + domain/ + infrastructure/ + features/</li>
           <li>&bull; API pública só pelo index.ts do módulo</li>
         </ul>
       </div>
@@ -5331,7 +5331,7 @@
         </div>
         <ul>
           <li>&bull; check-boundaries.ts barra imports e SQL cruzados</li>
-          <li>&bull; EventBus in-process: LivroCatalogado → Autoria</li>
+          <li>&bull; Uma fatia não importa outra; só os testes podem</li>
         </ul>
       </div>
     </div>

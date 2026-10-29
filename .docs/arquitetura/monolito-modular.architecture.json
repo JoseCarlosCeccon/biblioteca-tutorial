@@ -16,7 +16,7 @@
           "adapters",
           "pg"
         ],
-        "note": "POST /emprestimos: uc19 abre a transação e monta RegistrarEmprestimo com dependências do adapter."
+        "note": "POST /emprestimos: register-loan/route.ts abre inTransaction e monta RegisterLoan com circulationDependencies."
       },
       {
         "id": "modulos",
@@ -37,19 +37,19 @@
           "pg",
           "uc-circ"
         ],
-        "note": "SQL que atravessa módulos fica em src/adapters, nunca dentro dos módulos."
+        "note": "SQL que atravessa módulos fica em src/integration, nunca dentro dos módulos."
       }
     ],
     "legend": {
       "entries": {
         "frontend": {
-          "label": "Fatia vertical (ucNN.ts)"
+          "label": "Fatia vertical (features/*/route.ts)"
         },
         "backend": {
           "label": "Módulo / API"
         },
         "messagebus": {
-          "label": "Adapter de integração"
+          "label": "Integração entre módulos"
         }
       }
     }
@@ -59,7 +59,7 @@
       "id": "api",
       "type": "backend",
       "label": "Hono /api",
-      "sublabel": "server.ts · loader.ts",
+      "sublabel": "server.ts · composition.ts",
       "pos": [
         465,
         70
@@ -68,13 +68,13 @@
         200,
         64
       ],
-      "tag": "descobre ucNN.ts"
+      "tag": "loadSlices → route.ts"
     },
     {
       "id": "uc-acervo",
       "type": "frontend",
-      "label": "Fatias de Acervo",
-      "sublabel": "uc01–04 · uc13–16",
+      "label": "catalog/features",
+      "sublabel": "UC01–04 · UC13–16",
       "pos": [
         60,
         250
@@ -87,8 +87,8 @@
     {
       "id": "uc-autoria",
       "type": "frontend",
-      "label": "Fatias de Autoria",
-      "sublabel": "uc05–08",
+      "label": "authorship/features",
+      "sublabel": "UC05–08",
       "pos": [
         330,
         250
@@ -101,8 +101,8 @@
     {
       "id": "uc-leitores",
       "type": "frontend",
-      "label": "Fatias de Leitores",
-      "sublabel": "uc09–12",
+      "label": "readers/features",
+      "sublabel": "UC09–12",
       "pos": [
         600,
         250
@@ -115,8 +115,8 @@
     {
       "id": "uc-circ",
       "type": "frontend",
-      "label": "Fatias de Circulação",
-      "sublabel": "uc17–22",
+      "label": "circulation/features",
+      "sublabel": "UC17–22",
       "pos": [
         870,
         250
@@ -129,7 +129,7 @@
     {
       "id": "mod-acervo",
       "type": "backend",
-      "label": "modules/acervo",
+      "label": "modules/catalog",
       "sublabel": "livros · exemplares",
       "pos": [
         60,
@@ -143,7 +143,7 @@
     {
       "id": "mod-autoria",
       "type": "backend",
-      "label": "modules/autoria",
+      "label": "modules/authorship",
       "sublabel": "autores",
       "pos": [
         330,
@@ -157,7 +157,7 @@
     {
       "id": "mod-leitores",
       "type": "backend",
-      "label": "modules/leitores",
+      "label": "modules/readers",
       "sublabel": "leitores",
       "pos": [
         600,
@@ -171,7 +171,7 @@
     {
       "id": "mod-circ",
       "type": "backend",
-      "label": "modules/circulacao",
+      "label": "modules/circulation",
       "sublabel": "reservas · emprestimos",
       "pos": [
         870,
@@ -185,7 +185,7 @@
     {
       "id": "adapters",
       "type": "messagebus",
-      "label": "src/adapters",
+      "label": "src/integration",
       "sublabel": "SQL entre módulos",
       "pos": [
         1140,
@@ -200,7 +200,7 @@
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
-      "sublabel": "infrastructure · emTransacao",
+      "sublabel": "infrastructure · inTransaction",
       "pos": [
         465,
         580
@@ -214,7 +214,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "Acervo",
+      "label": "Acervo · catalog",
       "wraps": [
         "uc-acervo",
         "mod-acervo"
@@ -222,7 +222,7 @@
     },
     {
       "kind": "region",
-      "label": "Autoria",
+      "label": "Autoria · authorship",
       "wraps": [
         "uc-autoria",
         "mod-autoria"
@@ -230,7 +230,7 @@
     },
     {
       "kind": "region",
-      "label": "Leitores",
+      "label": "Leitores · readers",
       "wraps": [
         "uc-leitores",
         "mod-leitores"
@@ -238,7 +238,7 @@
     },
     {
       "kind": "region",
-      "label": "Circulação",
+      "label": "Circulação · circulation",
       "wraps": [
         "uc-circ",
         "mod-circ"
@@ -346,16 +346,16 @@
       "dot": "cyan",
       "title": "Fatia vertical",
       "items": [
-        "Um arquivo ucNN.ts registra rota e compõe o caso",
-        "Adicionar uma UC não altera as demais",
-        "uc23 (seed) usa src/seed"
+        "Cada features/<fatia>/route.ts exporta registerRoutes",
+        "Adicionar uma fatia não altera as demais",
+        "integration/seed (UC23) também é uma fatia"
       ]
     },
     {
       "dot": "emerald",
       "title": "Módulo",
       "items": [
-        "domain/ + infrastructure/ com repositórios",
+        "index.ts + domain/ + infrastructure/ + features/",
         "API pública só pelo index.ts do módulo"
       ]
     },
@@ -364,7 +364,7 @@
       "title": "Fronteiras",
       "items": [
         "check-boundaries.ts barra imports e SQL cruzados",
-        "EventBus in-process: LivroCatalogado → Autoria"
+        "Uma fatia não importa outra; só os testes podem"
       ]
     }
   ]

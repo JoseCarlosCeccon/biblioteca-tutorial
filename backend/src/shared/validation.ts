@@ -35,3 +35,8 @@ export function getFieldAsPositiveInt(
 
   return value;
 }
+
+/** Identificador numérico vindo da URL, com as mesmas regras dos campos inteiros. */
+export function parseId(raw: unknown): number {
+  return getFieldAsPositiveInt({ id: raw }, "id");
+}

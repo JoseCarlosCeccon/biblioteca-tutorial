@@ -95,7 +95,7 @@
         </a>
         <a class="cartao" style="--cor: var(--emerald)" href="monolito-modular.html">
           <div class="titulo">Monólito modular</div>
-          <p class="descricao">Hono /api distribuindo as fatias ucNN.ts para os módulos Acervo, Autoria, Leitores e Circulação, com os adapters entre eles.</p>
+          <p class="descricao">Hono /api carregando as fatias features/*/route.ts dos módulos catalog, authorship, readers e circulation, com src/integration entre eles.</p>
           <div class="arquivo">monolito-modular.html</div>
         </a>
       </div>
@@ -106,22 +106,22 @@
       <div class="grade">
         <a class="cartao" style="--cor: var(--violet)" href="modulo-acervo.html">
           <div class="titulo">Acervo</div>
-          <p class="descricao">Livros (uc01–04) e exemplares (uc13–16) sobre catalogo.ts e exemplares.ts.</p>
+          <p class="descricao">Livros (UC01–04) e exemplares (UC13–16) em modules/catalog, sobre infrastructure/books.ts e copies.ts.</p>
           <div class="arquivo">modulo-acervo.html</div>
         </a>
         <a class="cartao" style="--cor: var(--amber)" href="modulo-autoria.html">
           <div class="titulo">Autoria</div>
-          <p class="descricao">Autores (uc05–08) sobre cadastro.ts e a projeção de livros alimentada pelo evento LivroCatalogado.</p>
+          <p class="descricao">Autores (UC05–08) em modules/authorship, sobre authors.ts, com a contagem de livros via src/integration.</p>
           <div class="arquivo">modulo-autoria.html</div>
         </a>
         <a class="cartao" style="--cor: var(--rose)" href="modulo-leitores.html">
           <div class="titulo">Leitores</div>
-          <p class="descricao">Leitores (uc09–12), uma classe de domínio por fatia, com exclusão condicionada ao histórico.</p>
+          <p class="descricao">Leitores (UC09–12) em modules/readers, uma classe por fatia, com exclusão condicionada ao histórico.</p>
           <div class="arquivo">modulo-leitores.html</div>
         </a>
         <a class="cartao" style="--cor: var(--slate)" href="modulo-circulacao.html">
           <div class="titulo">Circulação</div>
-          <p class="descricao">Reservas (uc17, uc18, uc22) e empréstimos (uc19–21) sobre BaseCirculacao.</p>
+          <p class="descricao">Reservas (UC17, UC18, UC22) e empréstimos (UC19–21) em modules/circulation, sobre CirculationUseCase.</p>
           <div class="arquivo">modulo-circulacao.html</div>
         </a>
       </div>
@@ -131,13 +131,13 @@
       <h2>Dentro de uma fatia</h2>
       <div class="grade">
         <a class="cartao" style="--cor: var(--rose)" href="fatia-escrita.html">
-          <div class="titulo">Fatia de escrita — uc19</div>
-          <p class="descricao">POST /emprestimos passo a passo: validação, emTransacao com lock, regras de RegistrarEmprestimo e INSERT.</p>
+          <div class="titulo">Fatia de escrita — register-loan · UC19</div>
+          <p class="descricao">POST /emprestimos passo a passo: validação, inTransaction com lock, regras de RegisterLoan e INSERT.</p>
           <div class="arquivo">fatia-escrita.html</div>
         </a>
         <a class="cartao" style="--cor: var(--emerald)" href="fatia-leitura.html">
-          <div class="titulo">Fatia de leitura — uc21</div>
-          <p class="descricao">GET /emprestimos passo a passo: filtros, sql sem transação, ConsultarEmprestimos e só SELECT.</p>
+          <div class="titulo">Fatia de leitura — list-loans · UC21</div>
+          <p class="descricao">GET /emprestimos passo a passo: filtros, sql sem transação, ListLoans e só SELECT.</p>
           <div class="arquivo">fatia-leitura.html</div>
         </a>
       </div>

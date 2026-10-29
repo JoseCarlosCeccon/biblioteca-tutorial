@@ -2,19 +2,19 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Módulo Circulação — fatias verticais",
+    "title": "Módulo Circulação (circulation) — fatias verticais",
     "output": "modulo-circulacao.html",
     "quality_profile": "showcase",
     "legend": {
       "entries": {
         "frontend": {
-          "label": "Fatia vertical (ucNN.ts)"
+          "label": "Fatia vertical (features/*/route.ts)"
         },
         "backend": {
           "label": "Código do módulo"
         },
         "messagebus": {
-          "label": "Adapter de integração"
+          "label": "Integração entre módulos"
         }
       }
     },
@@ -52,7 +52,7 @@
           "consulta",
           "pg"
         ],
-        "note": "dependenciasCirculacao(tx) entrega as duas portas ligadas à mesma transação."
+        "note": "circulationDependencies(db) entrega as duas portas ligadas à mesma transação."
       }
     ]
   },
@@ -60,8 +60,8 @@
     {
       "id": "uc17",
       "type": "frontend",
-      "label": "uc17 Reservar",
-      "sublabel": "ReservarExemplar",
+      "label": "reserve-copy · UC17",
+      "sublabel": "ReserveCopy",
       "pos": [
         40,
         60
@@ -74,8 +74,8 @@
     {
       "id": "uc18",
       "type": "frontend",
-      "label": "uc18 Cancelar",
-      "sublabel": "CancelarReserva",
+      "label": "cancel-reservation · UC18",
+      "sublabel": "CancelReservation",
       "pos": [
         250,
         60
@@ -88,8 +88,8 @@
     {
       "id": "uc22",
       "type": "frontend",
-      "label": "uc22 Consultar",
-      "sublabel": "ConsultarReservas",
+      "label": "list-reservations · UC22",
+      "sublabel": "ListReservations",
       "pos": [
         460,
         60
@@ -102,8 +102,8 @@
     {
       "id": "uc19",
       "type": "frontend",
-      "label": "uc19 Emprestar",
-      "sublabel": "RegistrarEmprestimo",
+      "label": "register-loan · UC19",
+      "sublabel": "RegisterLoan",
       "pos": [
         720,
         60
@@ -116,8 +116,8 @@
     {
       "id": "uc20",
       "type": "frontend",
-      "label": "uc20 Devolver",
-      "sublabel": "RegistrarDevolucao",
+      "label": "register-return · UC20",
+      "sublabel": "RegisterReturn",
       "pos": [
         930,
         60
@@ -130,8 +130,8 @@
     {
       "id": "uc21",
       "type": "frontend",
-      "label": "uc21 Consultar",
-      "sublabel": "ConsultarEmprestimos",
+      "label": "list-loans · UC21",
+      "sublabel": "ListLoans",
       "pos": [
         1140,
         60
@@ -144,7 +144,7 @@
     {
       "id": "base",
       "type": "backend",
-      "label": "BaseCirculacao",
+      "label": "CirculationUseCase",
       "sublabel": "limites · prazos · Clock",
       "pos": [
         585,
@@ -154,27 +154,27 @@
         200,
         64
       ],
-      "tag": "domain/modelo.ts"
+      "tag": "domain/"
     },
     {
       "id": "repo",
       "type": "backend",
-      "label": "CirculacaoPostgres",
-      "sublabel": "RepositorioCirculacao",
+      "label": "PostgresCirculationRepository",
+      "sublabel": "CirculationRepository",
       "pos": [
-        330,
+        305,
         400
       ],
       "size": [
-        200,
+        250,
         64
       ]
     },
     {
       "id": "consulta",
       "type": "messagebus",
-      "label": "ConsultaCirculacaoPostgres",
-      "sublabel": "ConsultaDeCirculacao",
+      "label": "PostgresCirculationLookup",
+      "sublabel": "CirculationLookup",
       "pos": [
         840,
         400
@@ -183,13 +183,13 @@
         220,
         64
       ],
-      "tag": "src/adapters"
+      "tag": "src/integration"
     },
     {
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
-      "sublabel": "emTransacao",
+      "sublabel": "inTransaction",
       "pos": [
         585,
         570
@@ -203,7 +203,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "use-cases · reservas",
+      "label": "features · reservas",
       "wraps": [
         "uc17",
         "uc18",
@@ -212,7 +212,7 @@
     },
     {
       "kind": "region",
-      "label": "use-cases · empréstimos",
+      "label": "features · empréstimos",
       "wraps": [
         "uc19",
         "uc20",
@@ -304,8 +304,8 @@
       "dot": "cyan",
       "title": "Fatias",
       "items": [
-        "Cada ucNN.ts abre emTransacao e instancia sua classe",
-        "As seis classes estendem BaseCirculacao"
+        "Cada route.ts de escrita abre inTransaction e instancia sua classe",
+        "As seis classes estendem CirculationUseCase"
       ]
     },
     {
@@ -320,7 +320,7 @@
       "dot": "amber",
       "title": "Integração",
       "items": [
-        "ConsultaDeCirculacao lê leitores e exemplares de outros módulos",
+        "CirculationLookup lê leitores e exemplares de outros módulos",
         "Datas civis no fuso do Brasil via Clock"
       ]
     }

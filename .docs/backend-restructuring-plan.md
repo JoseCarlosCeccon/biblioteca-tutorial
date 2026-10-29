@@ -1,6 +1,6 @@
 # Reestruturação do backend — monólito modular com fatias verticais
 
-**Estado: pausado em 2026-10-29. Nada aplicado ao código ainda.**
+**Estado: aplicado no backend em 2026-10-29 (typecheck, fronteiras e 65 testes passando; rotas idênticas). Pendente: frontend.**
 Working tree limpo em `saas-evolution/fase02`, HEAD `cd8700b`. Na linha de base, `bun run typecheck` e
 `bun run verificar` passam.
 

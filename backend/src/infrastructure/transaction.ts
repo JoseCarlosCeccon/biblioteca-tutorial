@@ -6,11 +6,11 @@ import { sql } from "./postgres";
  * A verificação de um limite e sua alteração nunca ficam separadas por COMMIT.
  * O lock é compartilhado entre processos; um mutex JavaScript não bastaria.
  */
-export async function emTransacao<T>(
-  executar: (tx: TransactionSQL) => Promise<T>,
+export async function inTransaction<T>(
+  run: (tx: TransactionSQL) => Promise<T>,
 ): Promise<T> {
   return await sql.begin(async (tx) => {
     await tx`SELECT pg_advisory_xact_lock(22001)`;
-    return await executar(tx);
+    return await run(tx);
   }) as T;
 }

@@ -2,19 +2,19 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Módulo Acervo — fatias verticais",
+    "title": "Módulo Acervo (catalog) — fatias verticais",
     "output": "modulo-acervo.html",
     "quality_profile": "showcase",
     "legend": {
       "entries": {
         "frontend": {
-          "label": "Fatia vertical (ucNN.ts)"
+          "label": "Fatia vertical (features/*/route.ts)"
         },
         "backend": {
           "label": "Código do módulo"
         },
         "messagebus": {
-          "label": "Adapter de integração"
+          "label": "Integração entre módulos"
         }
       }
     },
@@ -30,7 +30,7 @@
           "catalogo",
           "pg"
         ],
-        "note": "uc01–04 registram rotas de /livros e delegam a catalogo.ts e às funções de livro."
+        "note": "create-book, search-books, update-book e delete-book registram rotas de /livros e usam infrastructure/books.ts."
       },
       {
         "id": "exemplares",
@@ -43,7 +43,7 @@
           "exemplares",
           "pg"
         ],
-        "note": "uc13–16 cuidam das cópias físicas; o número de registro vem de acervo_sequencias."
+        "note": "create-copy, search-copies, update-copy e delete-copy cuidam das cópias físicas; o número de registro vem de acervo_sequencias."
       },
       {
         "id": "integracao",
@@ -54,7 +54,7 @@
           "integracao",
           "pg"
         ],
-        "note": "Autor, disponibilidade e histórico chegam pela porta IntegracaoDoCatalogo, implementada em src/adapters."
+        "note": "Autor, disponibilidade e histórico chegam pela porta CatalogIntegration, implementada em src/integration."
       }
     ]
   },
@@ -62,7 +62,7 @@
     {
       "id": "uc01",
       "type": "frontend",
-      "label": "uc01 Cadastrar",
+      "label": "create-book · UC01",
       "sublabel": "POST /livros",
       "pos": [
         40,
@@ -76,7 +76,7 @@
     {
       "id": "uc02",
       "type": "frontend",
-      "label": "uc02 Buscar",
+      "label": "search-books · UC02",
       "sublabel": "GET /livros",
       "pos": [
         210,
@@ -90,7 +90,7 @@
     {
       "id": "uc03",
       "type": "frontend",
-      "label": "uc03 Atualizar",
+      "label": "update-book · UC03",
       "sublabel": "PUT /livros/:id",
       "pos": [
         380,
@@ -104,7 +104,7 @@
     {
       "id": "uc04",
       "type": "frontend",
-      "label": "uc04 Excluir",
+      "label": "delete-book · UC04",
       "sublabel": "DELETE /livros/:id",
       "pos": [
         550,
@@ -118,7 +118,7 @@
     {
       "id": "uc13",
       "type": "frontend",
-      "label": "uc13 Cadastrar",
+      "label": "create-copy · UC13",
       "sublabel": "POST /exemplares",
       "pos": [
         780,
@@ -132,7 +132,7 @@
     {
       "id": "uc14",
       "type": "frontend",
-      "label": "uc14 Buscar",
+      "label": "search-copies · UC14",
       "sublabel": "GET /exemplares",
       "pos": [
         950,
@@ -146,7 +146,7 @@
     {
       "id": "uc15",
       "type": "frontend",
-      "label": "uc15 Atualizar",
+      "label": "update-copy · UC15",
       "sublabel": "PUT /exemplares/:id",
       "pos": [
         1120,
@@ -160,7 +160,7 @@
     {
       "id": "uc16",
       "type": "frontend",
-      "label": "uc16 Excluir",
+      "label": "delete-copy · UC16",
       "sublabel": "DELETE /exemplares/:id",
       "pos": [
         1290,
@@ -174,8 +174,8 @@
     {
       "id": "catalogo",
       "type": "backend",
-      "label": "catalogo.ts",
-      "sublabel": "livros · LimiteDeLivros",
+      "label": "books.ts",
+      "sublabel": "livros · BookLimit",
       "pos": [
         280,
         320
@@ -184,13 +184,13 @@
         180,
         64
       ],
-      "tag": "+ buscar/atualizar/excluir"
+      "tag": "infrastructure/"
     },
     {
       "id": "exemplares",
       "type": "backend",
-      "label": "exemplares.ts",
-      "sublabel": "cópias · NumeroRegistro",
+      "label": "copies.ts",
+      "sublabel": "cópias · RegistrationNumber",
       "pos": [
         1020,
         320
@@ -199,13 +199,13 @@
         180,
         64
       ],
-      "tag": "+ buscar/atualizar/excluir"
+      "tag": "infrastructure/"
     },
     {
       "id": "integracao",
       "type": "messagebus",
-      "label": "acervoIntegracao",
-      "sublabel": "IntegracaoDoCatalogo",
+      "label": "catalogIntegration",
+      "sublabel": "CatalogIntegration",
       "pos": [
         650,
         320
@@ -214,13 +214,13 @@
         180,
         64
       ],
-      "tag": "src/adapters"
+      "tag": "src/integration"
     },
     {
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
-      "sublabel": "emTransacao · Bun.sql",
+      "sublabel": "inTransaction · Bun.sql",
       "pos": [
         650,
         540
@@ -234,7 +234,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "use-cases · livros",
+      "label": "features · livros",
       "wraps": [
         "uc01",
         "uc02",
@@ -244,7 +244,7 @@
     },
     {
       "kind": "region",
-      "label": "use-cases · exemplares",
+      "label": "features · exemplares",
       "wraps": [
         "uc13",
         "uc14",
@@ -352,15 +352,15 @@
       "dot": "cyan",
       "title": "Fatias",
       "items": [
-        "Cada ucNN.ts registra a rota e chama uma função do módulo",
-        "uc01 também mantém a busca legada GET /livros/:q"
+        "Cada route.ts lê o HTTP e chama o caso da sua fatia",
+        "search-books também mantém a busca legada GET /livros/:q"
       ]
     },
     {
       "dot": "emerald",
       "title": "Domínio",
       "items": [
-        "Isbn, NumeroRegistro e LimiteDeLivros em domain/",
+        "Isbn, RegistrationNumber e BookLimit em domain/",
         "Exemplar sempre ligado a um livro do catálogo"
       ]
     },
@@ -368,8 +368,8 @@
       "dot": "amber",
       "title": "Integração",
       "items": [
-        "sincronizarAutores atualiza livros_no_acervo",
-        "disponibilidade consulta reservas e emprestimos"
+        "syncAuthorBookCounts atualiza livros_no_acervo",
+        "copyAvailability consulta reservas e emprestimos"
       ]
     }
   ]

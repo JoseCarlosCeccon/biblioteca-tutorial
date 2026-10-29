@@ -1,38 +1,36 @@
-import { AutoriaComoConsulta } from "./adapters/AutoriaComoConsulta";
-import {
-  BuscarLivro,
-  CadastrarLivro,
-  type LivroCatalogado,
-  PostgresLivroRepository,
-} from "./modules/acervo";
-import { PostgresAutorRepository, ProjecaoDeLivros } from "./modules/autoria";
-import type { Clock } from "./shared/Clock";
-import { EventBus } from "./shared/EventBus";
-import { AutorId } from "./shared/identifiers";
-
-export type UseCases = {
-  cadastrarLivro: CadastrarLivro;
-  buscarLivro: BuscarLivro;
-};
+import { Glob } from "bun";
+import { prepareSeed } from "./integration/seed/schema";
+import { prepareAuthorship } from "./modules/authorship";
+import { prepareCatalog } from "./modules/catalog";
+import { prepareCirculation } from "./modules/circulation";
+import { prepareReaders } from "./modules/readers";
+import type { RegisterRoutes } from "./shared/http";
 
 /**
- * Composition root: este é o ÚNICO lugar do sistema que sabe, ao mesmo tempo,
- * que existem casos de uso e que existe Postgres. Trocar de banco foi trocar
- * as duas linhas de `new Postgres...` daqui (depois de as ports virarem async).
+ * Composition root: o único lugar que conhece todos os módulos. A ordem importa:
+ * a carga inicial de autores vem primeiro e os exemplares referenciam livros.
  */
-export function buildUseCases(now: Clock = () => new Date()): UseCases {
-  const livros = new PostgresLivroRepository();
-  const autores = new PostgresAutorRepository();
-  const autoria = new AutoriaComoConsulta(autores);
-  const bus = new EventBus();
-  const projecao = new ProjecaoDeLivros(autores);
+export async function prepareDatabase(): Promise<void> {
+  await prepareAuthorship();
+  await prepareCatalog();
+  await prepareReaders();
+  await prepareCirculation();
+  await prepareSeed();
+}
 
-  bus.subscribe<LivroCatalogado>("LivroCatalogado", (event) =>
-    projecao.registrarEntrada(new AutorId(event.autorId)),
-  );
-
-  return {
-    cadastrarLivro: new CadastrarLivro(livros, autoria, now, bus),
-    buscarLivro: new BuscarLivro(livros, autoria),
-  };
+/** Cada fatia traz o próprio route.ts: adicionar uma fatia não altera nenhum registro central. */
+export async function loadSlices(): Promise<RegisterRoutes[]> {
+  const files = [
+    ...new Glob("modules/*/features/*/route.ts").scanSync({ cwd: import.meta.dir }),
+    ...new Glob("integration/*/route.ts").scanSync({ cwd: import.meta.dir }),
+  ].map((file) => file.replaceAll("\\", "/")).sort();
+  const slices: RegisterRoutes[] = [];
+  for (const file of files) {
+    const slice = await import(new URL(file, import.meta.url).href);
+    if (typeof slice.registerRoutes !== "function") {
+      throw new Error(`Fatia sem registerRoutes: ${file}`);
+    }
+    slices.push(slice.registerRoutes);
+  }
+  return slices;
 }

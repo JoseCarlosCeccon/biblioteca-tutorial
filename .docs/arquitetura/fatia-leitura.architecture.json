@@ -2,7 +2,7 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Fatia de leitura — uc21 Consultar",
+    "title": "Fatia de leitura — list-loans · UC21",
     "output": "fatia-leitura.html",
     "quality_profile": "showcase",
     "legend": {
@@ -33,7 +33,7 @@
           "uc",
           "http"
         ],
-        "note": "Os filtros chegam pela query string; leitorId e exemplarId passam por filtroId."
+        "note": "Os filtros chegam pela query string; leitorId e exemplarId passam por parseIdFilter."
       },
       {
         "id": "sem-transacao",
@@ -43,7 +43,7 @@
           "conexao",
           "caso"
         ],
-        "note": "uc21.ts monta as portas com o sql comum e chama executar(filtros): sem BEGIN, lock nem COMMIT."
+        "note": "list-loans/route.ts monta as portas com o sql comum e chama execute(filters): sem BEGIN, lock nem COMMIT."
       },
       {
         "id": "montagem",
@@ -76,29 +76,29 @@
     {
       "id": "uc",
       "type": "backend",
-      "label": "uc21.ts",
+      "label": "list-loans/route.ts",
       "sublabel": "GET /emprestimos[/:id]",
       "pos": [
         360,
         80
       ],
       "size": [
-        220,
+        240,
         64
       ],
-      "tag": "compõe a fatia"
+      "tag": "UC21 · compõe a fatia"
     },
     {
       "id": "http",
       "type": "security",
-      "label": "circulacaoHttp",
-      "sublabel": "filtroId · idPositivo",
+      "label": "shared/http",
+      "sublabel": "parseIdFilter · parsePositiveId",
       "pos": [
         360,
         270
       ],
       "size": [
-        220,
+        240,
         64
       ]
     },
@@ -119,8 +119,8 @@
     {
       "id": "caso",
       "type": "backend",
-      "label": "ConsultarEmprestimos",
-      "sublabel": "extends BaseCirculacao",
+      "label": "ListLoans",
+      "sublabel": "extends CirculationUseCase",
       "pos": [
         1080,
         80
@@ -134,8 +134,8 @@
     {
       "id": "consulta",
       "type": "messagebus",
-      "label": "ConsultaCirculacaoPostgres",
-      "sublabel": "porta ConsultaDeCirculacao",
+      "label": "PostgresCirculationLookup",
+      "sublabel": "porta CirculationLookup",
       "pos": [
         740,
         270
@@ -143,19 +143,20 @@
       "size": [
         250,
         64
-      ]
+      ],
+      "tag": "src/integration"
     },
     {
       "id": "repo",
       "type": "backend",
-      "label": "CirculacaoPostgres",
-      "sublabel": "porta RepositorioCirculacao",
+      "label": "PostgresCirculationRepository",
+      "sublabel": "porta CirculationRepository",
       "pos": [
         1250,
         270
       ],
       "size": [
-        250,
+        270,
         64
       ]
     },
@@ -177,7 +178,7 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "modules/circulacao",
+      "label": "modules/circulation",
       "wraps": [
         "caso",
         "repo"
@@ -204,7 +205,7 @@
       "id": "conectar",
       "from": "uc",
       "to": "conexao",
-      "label": "③ deps(sql)",
+      "label": "③ dependências(sql)",
       "variant": "dashed"
     },
     {
@@ -227,7 +228,7 @@
       "id": "buscar",
       "from": "caso",
       "to": "repo",
-      "label": "⑤ emprestimos()",
+      "label": "⑤ loans()",
       "variant": "emphasis",
       "fromSide": "bottom",
       "toSide": "top"
@@ -256,16 +257,16 @@
       "dot": "cyan",
       "title": "O que tem na fatia",
       "items": [
-        "uc21.ts: rotas de lista e de detalhe",
-        "ConsultarEmprestimos: valida situação e filtra",
-        "obter(id) atende GET /emprestimos/:id"
+        "list-loans/route.ts: rotas de lista e de detalhe",
+        "ListLoans: valida situação e filtra",
+        "get(id) atende GET /emprestimos/:id"
       ]
     },
     {
       "dot": "emerald",
       "title": "Diferença da escrita",
       "items": [
-        "Sem emTransacao, lock, INSERT ou UPDATE",
+        "Sem inTransaction, lock, INSERT ou UPDATE",
         "Situação e dias de atraso são calculados, não gravados"
       ]
     },

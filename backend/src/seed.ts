@@ -1,15 +1,11 @@
+import { prepareDatabase } from "./composition";
 import { sql } from "./infrastructure/postgres";
-import { createAcervoTablesPostgres } from "./modules/acervo";
-import { createAutoriaTablesPostgres } from "./modules/autoria";
-import { carregarCasosDeUso } from "./use-cases/loader";
-import { executarSeed } from "./seed/executar";
+import { runSeed } from "./integration/seed/run";
 
 try {
-  await createAutoriaTablesPostgres();
-  await createAcervoTablesPostgres();
-  for (const caso of await carregarCasosDeUso()) await caso.preparar?.();
-  console.log(JSON.stringify(await executarSeed(), null, 2));
-} catch (erro) {
-  console.error(erro instanceof Error ? erro.message : erro);
+  await prepareDatabase();
+  console.log(JSON.stringify(await runSeed(), null, 2));
+} catch (error) {
+  console.error(error instanceof Error ? error.message : error);
   process.exitCode = 1;
 } finally { await sql.close(); }

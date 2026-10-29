@@ -4,14 +4,30 @@ import { dirname, join, normalize } from "node:path";
 const problems: string[] = [];
 
 /** Quem é o dono de cada tabela. Nenhum módulo cita uma tabela que não é dele. */
-const TABELAS: Record<string, string> = {
-  livros: "acervo",
-  autores: "autoria",
+const TABLE_OWNERS: Record<string, string> = {
+  livros: "catalog",
+  exemplares: "catalog",
+  acervo_sequencias: "catalog",
+  autores: "authorship",
+  autoria_migracoes: "authorship",
+  leitores: "readers",
+  reservas: "circulation",
+  emprestimos: "circulation",
 };
+
+/** Pasta da fatia (src/modules/<módulo>/features/<fatia>), ou null fora de uma fatia. */
+function sliceOf(path: string): string | null {
+  const parts = path.split("/");
+  return parts[3] === "features" && parts[4] ? parts.slice(0, 5).join("/") : null;
+}
 
 for await (const rawFile of new Glob("src/modules/**/*.ts").scan(".")) {
   const file = rawFile.replaceAll("\\", "/");
+  // testes montam cenários com dados de vários módulos e de outras fatias
+  if (file.endsWith(".test.ts")) continue;
+
   const module = file.split("/")[2]!;
+  const slice = sliceOf(file);
   const code = await Bun.file(file).text();
 
   for (const found of code.matchAll(/from\s+"(\.[^"]+)"/g)) {
@@ -20,19 +36,25 @@ for await (const rawFile of new Glob("src/modules/**/*.ts").scan(".")) {
     if (!target.startsWith("src/modules/")) continue;
 
     const otherModule = target.split("/")[2]!;
-    if (otherModule === module) continue;
+    if (otherModule !== module) {
+      if (target !== `src/modules/${otherModule}`) {
+        problems.push(`${file}\n      importa ${target}`);
+      }
+      continue;
+    }
 
-    if (target !== `src/modules/${otherModule}`) {
-      problems.push(`${file}\n      importa ${target}`);
+    const targetSlice = sliceOf(target);
+    if (targetSlice && targetSlice !== slice) {
+      problems.push(`${file}\n      importa a fatia ${targetSlice}`);
     }
   }
 
-  for (const [tabela, dono] of Object.entries(TABELAS)) {
-    if (dono === module) continue;
+  for (const [table, owner] of Object.entries(TABLE_OWNERS)) {
+    if (owner === module) continue;
 
-    if (new RegExp(`\\b(FROM|JOIN|INTO|UPDATE|TABLE|EXISTS)\\s+${tabela}\\b`, "i").test(code)) {
+    if (new RegExp(`\\b(FROM|JOIN|INTO|UPDATE|TABLE|EXISTS)\\s+${table}\\b`, "i").test(code)) {
       problems.push(
-        `${file}\n      toca a tabela "${tabela}", que pertence a ${dono}`,
+        `${file}\n      toca a tabela "${table}", que pertence a ${owner}`,
       );
     }
   }
@@ -40,7 +62,7 @@ for await (const rawFile of new Glob("src/modules/**/*.ts").scan(".")) {
 
 if (problems.length > 0) {
   console.error("Importações que furam a fronteira de módulo:\n");
-  for (const problema of problems) console.error(`  ${problema}\n`);
+  for (const problem of problems) console.error(`  ${problem}\n`);
   process.exit(1);
 }
 

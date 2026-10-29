@@ -1,11 +1,8 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import type { UseCases } from "./composition";
 import { DomainError, InvalidValue } from "./shared/domain-errors";
-import { register as registerCadastrarLegado } from "./modules/acervo/features/cadastrar-livro/route";
-import { register as registerBuscarLegado } from "./modules/acervo/features/buscar-livro/route";
 import { InvalidInput, NotFound, RuleConflict } from "./shared/errors";
-import type { CasoDeUso } from "./use-cases/types";
+import type { RegisterRoutes } from "./shared/http";
 
 /** O build do React (`bun run build` em frontend/), relativo à pasta backend/. */
 const FRONTEND = "../frontend/dist";
@@ -28,22 +25,18 @@ function errorResponse(error: unknown): Response {
   return Response.json({ error: "Erro interno" }, { status: 500 });
 }
 
-export function createApp(useCases: UseCases, casos: CasoDeUso[] = []) {
+export function createApp(slices: RegisterRoutes[] = []) {
   const api = new Hono();
 
-  api.get("/", (contexto) => contexto.json({ message: "API da Biblioteca" }));
+  api.get("/", (context) => context.json({ message: "API da Biblioteca" }));
 
-  // Mantém os dois casos originais até suas atividades de evolução serem integradas.
-  const ids = new Set(casos.map((caso) => caso.id));
-  if (!ids.has("uc01")) registerCadastrarLegado(api, useCases);
-  if (!ids.has("uc01") && !ids.has("uc02")) registerBuscarLegado(api, useCases);
-  for (const caso of casos) caso.registrar(api);
+  for (const registerRoutes of slices) registerRoutes(api);
 
   const app = new Hono();
 
   // toda a API mora sob /api: o resto dos endereços fica livre para o frontend
   app.route("/api", api);
-  app.all("/api/*", (contexto) => contexto.notFound());
+  app.all("/api/*", (context) => context.notFound());
 
   // arquivos do build: index.html, JS, CSS, ícone
   app.use("*", serveStatic({ root: FRONTEND }));
@@ -52,8 +45,8 @@ export function createApp(useCases: UseCases, casos: CasoDeUso[] = []) {
   // devolve o index.html e o roteador do navegador decide o que mostrar
   app.get("*", serveStatic({ path: `${FRONTEND}/index.html` }));
 
-  app.notFound((contexto) =>
-    contexto.json({ error: "Recurso não encontrado" }, 404),
+  app.notFound((context) =>
+    context.json({ error: "Recurso não encontrado" }, 404),
   );
 
   app.onError((error) => errorResponse(error));
@@ -62,9 +55,8 @@ export function createApp(useCases: UseCases, casos: CasoDeUso[] = []) {
 }
 
 export function createServer(
-  useCases: UseCases,
-  porta = Number(process.env.PORT ?? 3000),
-  casos: CasoDeUso[] = [],
+  slices: RegisterRoutes[],
+  port = Number(process.env.PORT ?? 3000),
 ) {
-  return Bun.serve({ port: porta, fetch: createApp(useCases, casos).fetch });
+  return Bun.serve({ port, fetch: createApp(slices).fetch });
 }
