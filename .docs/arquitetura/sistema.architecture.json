@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Biblioteca — arquitetura geral",
+    "output": "sistema.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "producao",
+        "label": "Caminho em produção",
+        "focus": [
+          "navegador",
+          "spa",
+          "app",
+          "db",
+          "volume"
+        ],
+        "note": "Uma única porta 3000 entrega a interface e a API; o banco só existe na rede do Compose."
+      },
+      {
+        "id": "desenvolvimento",
+        "label": "Desenvolvimento do frontend",
+        "focus": [
+          "navegador",
+          "vite",
+          "app"
+        ],
+        "note": "O Vite na porta 5173 recarrega o React e repassa /api para o contêiner app."
+      },
+      {
+        "id": "build-testes",
+        "label": "Build e testes",
+        "focus": [
+          "dockerfile",
+          "app",
+          "test",
+          "db"
+        ],
+        "note": "O Dockerfile compila o React e empacota o backend; o serviço test usa o banco biblioteca_test."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "navegador",
+      "type": "external",
+      "label": "Navegador",
+      "sublabel": "localhost:3000",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "SPA React 19",
+      "sublabel": "React Router · Vite",
+      "pos": [
+        260,
+        300
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "frontend/dist"
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "app · Bun + Hono",
+      "sublabel": "/api + estáticos :3000",
+      "pos": [
+        520,
+        300
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "monólito modular"
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "PostgreSQL 18",
+      "sublabel": "serviço db :5432",
+      "pos": [
+        800,
+        300
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "volume",
+      "type": "database",
+      "label": "Volume pgdata",
+      "sublabel": "/var/lib/postgresql",
+      "pos": [
+        1060,
+        300
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "dockerfile",
+      "type": "cloud",
+      "label": "infra/Dockerfile",
+      "sublabel": "build multi-stage",
+      "pos": [
+        520,
+        120
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "vite",
+      "type": "frontend",
+      "label": "Vite dev server",
+      "sublabel": "localhost:5173",
+      "pos": [
+        260,
+        480
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "só em dev"
+    },
+    {
+      "id": "test",
+      "type": "backend",
+      "label": "serviço test",
+      "sublabel": "bun test · profile test",
+      "pos": [
+        800,
+        480
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Docker Compose · biblioteca-tutorial",
+      "wraps": [
+        "app",
+        "db",
+        "volume",
+        "test"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "rede interna · sem porta publicada",
+      "wraps": [
+        "db",
+        "volume"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "carrega-spa",
+      "from": "navegador",
+      "to": "spa",
+      "label": "executa",
+      "variant": "emphasis"
+    },
+    {
+      "id": "spa-api",
+      "from": "spa",
+      "to": "app",
+      "label": "fetch /api JSON",
+      "variant": "emphasis"
+    },
+    {
+      "id": "app-sql",
+      "from": "app",
+      "to": "db",
+      "label": "SQL · Bun.sql",
+      "variant": "emphasis"
+    },
+    {
+      "id": "db-volume",
+      "from": "db",
+      "to": "volume",
+      "label": "persiste"
+    },
+    {
+      "id": "build-imagem",
+      "from": "dockerfile",
+      "to": "app",
+      "label": "imagem",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "vite-proxy",
+      "from": "vite",
+      "to": "app",
+      "label": "proxy /api",
+      "variant": "dashed"
+    },
+    {
+      "id": "test-db",
+      "from": "test",
+      "to": "db",
+      "label": "biblioteca_test"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Frontend",
+      "items": [
+        "React 19 + React Router 7, build pelo Vite",
+        "Telas ucNN.tsx descobertas por import.meta.glob"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Backend",
+      "items": [
+        "Bun + Hono serve /api e o frontend/dist",
+        "Fallback para index.html nas rotas do React"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Infra",
+      "items": [
+        "Compose: app, db e test (profile)",
+        "PostgreSQL sem porta exposta; dados no volume pgdata"
+      ]
+    }
+  ]
+}

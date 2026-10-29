@@ -1,0 +1,371 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Backend — monólito modular e fatias verticais",
+    "output": "monolito-modular.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "fatia-circulacao",
+        "label": "Uma fatia de ponta a ponta",
+        "focus": [
+          "api",
+          "uc-circ",
+          "mod-circ",
+          "adapters",
+          "pg"
+        ],
+        "note": "POST /emprestimos: uc19 abre a transação e monta RegistrarEmprestimo com dependências do adapter."
+      },
+      {
+        "id": "modulos",
+        "label": "Módulos de domínio",
+        "focus": [
+          "mod-acervo",
+          "mod-autoria",
+          "mod-leitores",
+          "mod-circ"
+        ],
+        "note": "Cada módulo é dono das suas tabelas; check-boundaries.ts barra imports e SQL cruzados."
+      },
+      {
+        "id": "integracao",
+        "label": "Integração entre módulos",
+        "focus": [
+          "adapters",
+          "pg",
+          "uc-circ"
+        ],
+        "note": "SQL que atravessa módulos fica em src/adapters, nunca dentro dos módulos."
+      }
+    ],
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Fatia vertical (ucNN.ts)"
+        },
+        "backend": {
+          "label": "Módulo / API"
+        },
+        "messagebus": {
+          "label": "Adapter de integração"
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Hono /api",
+      "sublabel": "server.ts · loader.ts",
+      "pos": [
+        465,
+        70
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "tag": "descobre ucNN.ts"
+    },
+    {
+      "id": "uc-acervo",
+      "type": "frontend",
+      "label": "Fatias de Acervo",
+      "sublabel": "uc01–04 · uc13–16",
+      "pos": [
+        60,
+        250
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "uc-autoria",
+      "type": "frontend",
+      "label": "Fatias de Autoria",
+      "sublabel": "uc05–08",
+      "pos": [
+        330,
+        250
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "uc-leitores",
+      "type": "frontend",
+      "label": "Fatias de Leitores",
+      "sublabel": "uc09–12",
+      "pos": [
+        600,
+        250
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "uc-circ",
+      "type": "frontend",
+      "label": "Fatias de Circulação",
+      "sublabel": "uc17–22",
+      "pos": [
+        870,
+        250
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "mod-acervo",
+      "type": "backend",
+      "label": "modules/acervo",
+      "sublabel": "livros · exemplares",
+      "pos": [
+        60,
+        400
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "mod-autoria",
+      "type": "backend",
+      "label": "modules/autoria",
+      "sublabel": "autores",
+      "pos": [
+        330,
+        400
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "mod-leitores",
+      "type": "backend",
+      "label": "modules/leitores",
+      "sublabel": "leitores",
+      "pos": [
+        600,
+        400
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "mod-circ",
+      "type": "backend",
+      "label": "modules/circulacao",
+      "sublabel": "reservas · emprestimos",
+      "pos": [
+        870,
+        400
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "adapters",
+      "type": "messagebus",
+      "label": "src/adapters",
+      "sublabel": "SQL entre módulos",
+      "pos": [
+        1140,
+        400
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "infrastructure · emTransacao",
+      "pos": [
+        465,
+        580
+      ],
+      "size": [
+        200,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Acervo",
+      "wraps": [
+        "uc-acervo",
+        "mod-acervo"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Autoria",
+      "wraps": [
+        "uc-autoria",
+        "mod-autoria"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Leitores",
+      "wraps": [
+        "uc-leitores",
+        "mod-leitores"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Circulação",
+      "wraps": [
+        "uc-circ",
+        "mod-circ"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "api-acervo",
+      "from": "api",
+      "to": "uc-acervo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "api-autoria",
+      "from": "api",
+      "to": "uc-autoria",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "api-leitores",
+      "from": "api",
+      "to": "uc-leitores",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "api-circ",
+      "from": "api",
+      "to": "uc-circ",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "acervo-mod",
+      "from": "uc-acervo",
+      "to": "mod-acervo",
+      "variant": "emphasis"
+    },
+    {
+      "id": "autoria-mod",
+      "from": "uc-autoria",
+      "to": "mod-autoria",
+      "variant": "emphasis"
+    },
+    {
+      "id": "leitores-mod",
+      "from": "uc-leitores",
+      "to": "mod-leitores",
+      "variant": "emphasis"
+    },
+    {
+      "id": "circ-mod",
+      "from": "uc-circ",
+      "to": "mod-circ",
+      "variant": "emphasis"
+    },
+    {
+      "id": "circ-adapters",
+      "from": "uc-circ",
+      "to": "adapters",
+      "label": "dependências",
+      "variant": "dashed"
+    },
+    {
+      "id": "acervo-pg",
+      "from": "mod-acervo",
+      "to": "pg",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "autoria-pg",
+      "from": "mod-autoria",
+      "to": "pg",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "leitores-pg",
+      "from": "mod-leitores",
+      "to": "pg",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "circ-pg",
+      "from": "mod-circ",
+      "to": "pg",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "adapters-pg",
+      "from": "adapters",
+      "to": "pg",
+      "label": "consultas cruzadas",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Fatia vertical",
+      "items": [
+        "Um arquivo ucNN.ts registra rota e compõe o caso",
+        "Adicionar uma UC não altera as demais",
+        "uc23 (seed) usa src/seed"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Módulo",
+      "items": [
+        "domain/ + infrastructure/ com repositórios",
+        "API pública só pelo index.ts do módulo"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Fronteiras",
+      "items": [
+        "check-boundaries.ts barra imports e SQL cruzados",
+        "EventBus in-process: LivroCatalogado → Autoria"
+      ]
+    }
+  ]
+}
