@@ -48,5 +48,8 @@ backend/data/*.csv
 # Saida do ai-distiller
 .aid/
 
+# Dados locais do Lesson Bridge
+.lesson-bridge/
+
 # Cache dos geradores Python
 __pycache__/
