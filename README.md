@@ -62,7 +62,19 @@ bun run dev
 ```
 
 Abra <http://localhost:5173>. O proxy do Vite encaminha `/api` para a aplicação
-na porta 3000. As páginas são `/` (busca) e `/cadastrar` (cadastro).
+na porta 3000. O menu agrupa as páginas por área:
+
+| Área | Páginas |
+|---|---|
+| Livros | `/livros`, `/livros/cadastrar`, `/livros/editar`, `/livros/excluir`, `/livros/seed` |
+| Autores | `/autores`, `/autores/cadastrar`, `/autores/editar`, `/autores/excluir` |
+| Leitores | `/leitores`, `/leitores/cadastrar`, `/leitores/editar`, `/leitores/excluir` |
+| Exemplares | `/exemplares`, `/exemplares/cadastrar`, `/exemplares/editar`, `/exemplares/excluir` |
+| Reservas | `/reservas`, `/reservas/criar`, `/reservas/cancelar` |
+| Empréstimos | `/emprestimos`, `/emprestimos/registrar`, `/emprestimos/devolver` |
+
+Os endereços antigos `/` e `/cadastrar` redirecionam para `/livros` e
+`/livros/cadastrar`.
 
 Para validar o frontend:
 
@@ -77,18 +89,26 @@ pela porta 3000, refaça esse build depois de alterar o frontend.
 
 ## API e carga inicial
 
-| Operação | Endereço |
-|---|---|
-| Identificação da API | `GET /api` |
-| Cadastro de livro | `POST /api/livros` |
-| Busca por ISBN, título ou autor | `GET /api/livros/:q` |
+Todas as rotas ficam sob `/api`; `GET /api` identifica a API.
 
-O cadastro recebe `isbn`, `titulo` e `autorId`. Os autores da carga inicial são
-1 — Eric Evans, 2 — Robert C. Martin, 3 — Harper Lee e 4 — Jane Austen.
+| Recurso | Consultar | Cadastrar ou agir | Atualizar | Excluir |
+|---|---|---|---|---|
+| Livros | `GET /livros?q=`, `GET /livros/id/:id` | `POST /livros` | `PUT /livros/:id` | `DELETE /livros/:id` |
+| Autores | `GET /autores?q=`, `GET /autores/:id` | `POST /autores` | `PUT /autores/:id` | `DELETE /autores/:id` |
+| Leitores | `GET /leitores?q=`, `GET /leitores/:id` | `POST /leitores` | `PUT /leitores/:id` | `DELETE /leitores/:id` |
+| Exemplares | `GET /exemplares?q=&livroId=&situacao=`, `GET /exemplares/:id` | `POST /exemplares` | `PUT /exemplares/:id` | `DELETE /exemplares/:id` |
+| Reservas | `GET /reservas?leitorId=&exemplarId=&situacao=`, `GET /reservas/:id` | `POST /reservas`, `POST /reservas/:id/cancelamento` | — | — |
+| Empréstimos | `GET /emprestimos?leitorId=&exemplarId=&situacao=`, `GET /emprestimos/:id` | `POST /emprestimos`, `POST /emprestimos/:id/devolucao` | — | — |
+| Seed | `GET /seed` | `POST /seed` | — | — |
+
+A busca legada `GET /api/livros/:q` continua disponível. O cadastro de livro
+recebe `isbn`, `titulo` e `autorId`; o de exemplar recebe `livroId`, `localizacao`
+e `estadoConservacao`. Os autores da carga inicial são 1 — Eric Evans,
+2 — Robert C. Martin, 3 — Harper Lee e 4 — Jane Austen.
 
 ## Estrutura e tutorial original
 
-- `backend/`: aplicação Bun/Hono, módulos Acervo e Autoria, testes e verificador de fronteiras.
+- `backend/`: aplicação Bun/Hono, módulos Acervo, Autoria, Leitores e Circulação, seed, testes e verificador de fronteiras.
 - `frontend/`: React, React Router, Vite e CSS.
 - `infra/`: Compose, Dockerfile e `Dockerfile.dockerignore`.
 - `.docs/saas-evolution/`: aulas da evolução SaaS.
