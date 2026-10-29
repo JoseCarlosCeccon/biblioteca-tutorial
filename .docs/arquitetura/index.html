@@ -90,12 +90,12 @@
       <div class="grade">
         <a class="cartao" style="--cor: var(--cyan)" href="sistema.html">
           <div class="titulo">Arquitetura geral</div>
-          <p class="descricao">Navegador, SPA React 19, app Bun + Hono, PostgreSQL 18 e o Docker Compose, com os caminhos de produção, desenvolvimento e testes.</p>
+          <p class="descricao">Navegador, SPA React 19, app Bun + Hono, PostgreSQL 18, Redis 8, a API do Gemini e o Docker Compose, com os caminhos de produção, desenvolvimento e testes.</p>
           <div class="arquivo">sistema.html</div>
         </a>
         <a class="cartao" style="--cor: var(--emerald)" href="monolito-modular.html">
           <div class="titulo">Monólito modular</div>
-          <p class="descricao">Hono /api carregando as fatias features/*/route.ts dos módulos catalog, authorship, readers e circulation, com src/integration entre eles.</p>
+          <p class="descricao">Hono /api carregando as fatias features/*/route.ts dos módulos catalog, authorship, readers e circulation; cada módulo com sua porta em src/integration, e o Redis e o Gemini nos dados derivados.</p>
           <div class="arquivo">monolito-modular.html</div>
         </a>
       </div>
@@ -106,12 +106,12 @@
       <div class="grade">
         <a class="cartao" style="--cor: var(--violet)" href="modulo-acervo.html">
           <div class="titulo">Acervo</div>
-          <p class="descricao">Livros (UC01–04) e exemplares (UC13–16) em modules/catalog, sobre infrastructure/books.ts e copies.ts.</p>
+          <p class="descricao">Livros (UC01–04), exemplares (UC13–16) e a busca semântica (UC24) em modules/catalog, sobre books.ts, copies.ts e o índice vetorial bookIndex.ts no Redis.</p>
           <div class="arquivo">modulo-acervo.html</div>
         </a>
         <a class="cartao" style="--cor: var(--amber)" href="modulo-autoria.html">
           <div class="titulo">Autoria</div>
-          <p class="descricao">Autores (UC05–08) em modules/authorship, sobre authors.ts, com a contagem de livros via src/integration.</p>
+          <p class="descricao">Autores (UC05–08) em modules/authorship: cada fatia faz o próprio SQL, a busca tem cache no Redis e a contagem de livros vem de src/integration.</p>
           <div class="arquivo">modulo-autoria.html</div>
         </a>
         <a class="cartao" style="--cor: var(--rose)" href="modulo-leitores.html">

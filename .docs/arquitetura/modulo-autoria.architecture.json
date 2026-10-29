@@ -28,9 +28,21 @@
           "uc07",
           "uc08",
           "cadastro",
+          "cache",
           "pg"
         ],
-        "note": "create-author, search-authors, update-author e delete-author usam infrastructure/authors.ts para ler e gravar a tabela autores."
+        "note": "Cada fatia faz o próprio INSERT, UPDATE ou DELETE em autores; search, update e delete leem o autor por authors.ts."
+      },
+      {
+        "id": "cache",
+        "label": "Cache da busca (UC06)",
+        "focus": [
+          "uc05",
+          "uc06",
+          "cache",
+          "redis"
+        ],
+        "note": "search-authors lê o Redis antes do Postgres (X-Cache: HIT, MISS, BYPASS); toda escrita invalida a geração depois do COMMIT."
       },
       {
         "id": "contagem",
@@ -40,7 +52,7 @@
           "integracao",
           "pg"
         ],
-        "note": "Busca, edição e exclusão contam livros do autor pela porta AuthorshipIntegration."
+        "note": "Busca, edição e exclusão contam livros pela porta AuthorshipIntegration; editar o autor reindexa os livros dele no Acervo."
       },
       {
         "id": "acervo",
@@ -49,7 +61,7 @@
           "acervo",
           "pg"
         ],
-        "note": "Ao gravar livros, o Acervo atualiza livros_no_acervo por catalogIntegration, sem importar o módulo."
+        "note": "Ao gravar livros, o Acervo atualiza livros_no_acervo e invalida o cache de buscas por catalogIntegration, sem importar o módulo."
       }
     ]
   },
@@ -111,6 +123,21 @@
       ]
     },
     {
+      "id": "cache",
+      "type": "backend",
+      "label": "searchCache.ts",
+      "sublabel": "cache-aside · gerações",
+      "pos": [
+        60,
+        300
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "tag": "infrastructure/"
+    },
+    {
       "id": "cadastro",
       "type": "backend",
       "label": "authors.ts",
@@ -141,6 +168,21 @@
       "tag": "src/integration"
     },
     {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 8",
+      "sublabel": "autoria:buscas:*",
+      "pos": [
+        60,
+        520
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "tag": "dados derivados"
+    },
+    {
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
@@ -158,13 +200,13 @@
       "id": "acervo",
       "type": "messagebus",
       "label": "catalogIntegration",
-      "sublabel": "syncAuthorBookCounts",
+      "sublabel": "syncAuthorBookCounts · bookCountsChanged",
       "pos": [
         900,
         520
       ],
       "size": [
-        210,
+        250,
         64
       ],
       "tag": "vem do Acervo"
@@ -184,9 +226,21 @@
   ],
   "connections": [
     {
-      "id": "uc05-cad",
+      "id": "uc05-cache",
       "from": "uc05",
-      "to": "cadastro",
+      "to": "cache",
+      "label": "invalida",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "uc06-cache",
+      "from": "uc06",
+      "to": "cache",
+      "label": "lê e grava",
+      "variant": "dashed",
       "fromSide": "bottom",
       "toSide": "top"
     },
@@ -222,7 +276,7 @@
       "id": "cad-pg",
       "from": "cadastro",
       "to": "pg",
-      "label": "autores",
+      "label": "SELECT autores",
       "variant": "emphasis",
       "labelDy": 24
     },
@@ -239,6 +293,16 @@
       "to": "pg",
       "label": "UPDATE livros_no_acervo",
       "variant": "dashed"
+    },
+    {
+      "id": "cache-redis",
+      "from": "cache",
+      "to": "redis",
+      "label": "HSETEX · INCR",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
     }
   ],
   "cards": [
@@ -246,7 +310,7 @@
       "dot": "cyan",
       "title": "Fatias",
       "items": [
-        "As fatias chamam createAuthor, searchAuthors, updateAuthor e deleteAuthor",
+        "As fatias chamam createAuthor, searchAuthorsCached, updateAuthor e deleteAuthor",
         "Excluir recusa autor com livros vinculados"
       ]
     },
@@ -262,8 +326,16 @@
       "dot": "amber",
       "title": "Contratos públicos",
       "items": [
-        "index.ts exporta só prepareAuthorship e AuthorshipIntegration",
+        "index.ts exporta prepareAuthorship, invalidateAuthorSearch e os tipos da porta",
         "O Acervo lê autores por src/integration, sem importar Author"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cache no Redis",
+      "items": [
+        "Um INCR na geração invalida todas as buscas",
+        "Cada termo vale 60 s (HSETEX); sem Redis, BYPASS"
       ]
     }
   ]

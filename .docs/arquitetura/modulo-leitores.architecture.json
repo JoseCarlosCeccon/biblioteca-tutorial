@@ -8,10 +8,10 @@
     "legend": {
       "entries": {
         "frontend": {
-          "label": "Fatia vertical (features/*/route.ts)"
+          "label": "route.ts da fatia"
         },
         "backend": {
-          "label": "Código do módulo"
+          "label": "Classe da fatia e repositório"
         },
         "messagebus": {
           "label": "Integração entre módulos"
@@ -64,7 +64,7 @@
     {
       "id": "uc09",
       "type": "frontend",
-      "label": "create-reader · UC09",
+      "label": "route.ts · UC09",
       "sublabel": "POST /leitores",
       "pos": [
         60,
@@ -78,10 +78,10 @@
     {
       "id": "uc10",
       "type": "frontend",
-      "label": "search-readers · UC10",
+      "label": "route.ts · UC10",
       "sublabel": "GET /leitores",
       "pos": [
-        300,
+        320,
         60
       ],
       "size": [
@@ -92,10 +92,10 @@
     {
       "id": "uc11",
       "type": "frontend",
-      "label": "update-reader · UC11",
+      "label": "route.ts · UC11",
       "sublabel": "PUT /leitores/:id",
       "pos": [
-        540,
+        580,
         60
       ],
       "size": [
@@ -106,10 +106,10 @@
     {
       "id": "uc12",
       "type": "frontend",
-      "label": "delete-reader · UC12",
+      "label": "route.ts · UC12",
       "sublabel": "DELETE /leitores/:id",
       "pos": [
-        780,
+        840,
         60
       ],
       "size": [
@@ -135,9 +135,9 @@
       "id": "buscar",
       "type": "backend",
       "label": "SearchReaders",
-      "sublabel": "nome · CPF · id",
+      "sublabel": "nome · e-mail · CPF · id",
       "pos": [
-        300,
+        320,
         220
       ],
       "size": [
@@ -151,7 +151,7 @@
       "label": "UpdateReader",
       "sublabel": "mantém CPF próprio",
       "pos": [
-        540,
+        580,
         220
       ],
       "size": [
@@ -165,7 +165,7 @@
       "label": "DeleteReader",
       "sublabel": "só sem histórico",
       "pos": [
-        780,
+        840,
         220
       ],
       "size": [
@@ -179,13 +179,14 @@
       "label": "PostgresReaderRepository",
       "sublabel": "ReaderRepository",
       "pos": [
-        280,
+        430,
         390
       ],
       "size": [
         220,
         64
-      ]
+      ],
+      "tag": "infrastructure/"
     },
     {
       "id": "historico",
@@ -193,7 +194,7 @@
       "label": "PostgresReaderHistory",
       "sublabel": "ReaderHistory",
       "pos": [
-        1050,
+        1110,
         390
       ],
       "size": [
@@ -208,7 +209,7 @@
       "label": "PostgreSQL",
       "sublabel": "tabela leitores",
       "pos": [
-        640,
+        700,
         560
       ],
       "size": [
@@ -220,23 +221,34 @@
   "boundaries": [
     {
       "kind": "region",
-      "label": "features/*/route.ts",
+      "label": "features/create-reader",
       "wraps": [
         "uc09",
-        "uc10",
-        "uc11",
-        "uc12"
+        "cadastrar"
       ]
     },
     {
       "kind": "region",
-      "label": "modules/readers",
+      "label": "features/search-readers",
       "wraps": [
-        "cadastrar",
-        "buscar",
-        "atualizar",
-        "excluir",
-        "repo"
+        "uc10",
+        "buscar"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "features/update-reader",
+      "wraps": [
+        "uc11",
+        "atualizar"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "features/delete-reader",
+      "wraps": [
+        "uc12",
+        "excluir"
       ]
     }
   ],
@@ -319,7 +331,7 @@
       "dot": "cyan",
       "title": "Fatias",
       "items": [
-        "Cada route.ts lê o HTTP com shared/http e chama uma classe",
+        "Cada features/<fatia>/ tem o route.ts e a classe do caso",
         "Erros de domínio viram 400, 404 ou 409 no server.ts"
       ]
     },

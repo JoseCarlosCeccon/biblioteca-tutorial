@@ -145,7 +145,7 @@
       "id": "base",
       "type": "backend",
       "label": "CirculationUseCase",
-      "sublabel": "limites · prazos · Clock",
+      "sublabel": "vínculos · situação · Clock",
       "pos": [
         585,
         230
@@ -313,7 +313,8 @@
       "title": "Regras",
       "items": [
         "Reserva: 2 por leitor, 7 dias, expira no 8º dia",
-        "Empréstimo: 3 por leitor contando atrasados, 14 dias"
+        "Empréstimo: 3 por leitor contando atrasados, 14 dias",
+        "Limites e prazos ficam em ReserveCopy e RegisterLoan"
       ]
     },
     {

@@ -15,6 +15,9 @@
         },
         "messagebus": {
           "label": "Integração entre módulos"
+        },
+        "external": {
+          "label": "Serviço externo"
         }
       }
     },
@@ -30,7 +33,7 @@
           "catalogo",
           "pg"
         ],
-        "note": "create-book, search-books, update-book e delete-book registram rotas de /livros e usam infrastructure/books.ts."
+        "note": "As fatias de livros usam infrastructure/books.ts; create, update e delete reindexam o livro depois do COMMIT."
       },
       {
         "id": "exemplares",
@@ -43,7 +46,18 @@
           "exemplares",
           "pg"
         ],
-        "note": "create-copy, search-copies, update-copy e delete-copy cuidam das cópias físicas; o número de registro vem de acervo_sequencias."
+        "note": "As fatias de exemplares cuidam das cópias físicas; create-copy gera o RegistrationNumber com acervo_sequencias."
+      },
+      {
+        "id": "semantica",
+        "label": "Busca semântica (UC24)",
+        "focus": [
+          "uc24",
+          "indice",
+          "redis",
+          "gemini"
+        ],
+        "note": "O UC24 vira a consulta em vetor com o Gemini, pede ao Redis os livros mais próximos e confirma cada um no Postgres."
       },
       {
         "id": "integracao",
@@ -54,18 +68,32 @@
           "integracao",
           "pg"
         ],
-        "note": "Autor, disponibilidade e histórico chegam pela porta CatalogIntegration, implementada em src/integration."
+        "note": "Autor, disponibilidade, histórico e a invalidação do cache de autores passam pela porta CatalogIntegration (src/integration)."
       }
     ]
   },
   "components": [
+    {
+      "id": "uc24",
+      "type": "frontend",
+      "label": "semantic-search-books · UC24",
+      "sublabel": "GET /busca-semantica/livros",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        210,
+        64
+      ]
+    },
     {
       "id": "uc01",
       "type": "frontend",
       "label": "create-book · UC01",
       "sublabel": "POST /livros",
       "pos": [
-        40,
+        300,
         80
       ],
       "size": [
@@ -79,7 +107,7 @@
       "label": "search-books · UC02",
       "sublabel": "GET /livros",
       "pos": [
-        210,
+        470,
         80
       ],
       "size": [
@@ -93,7 +121,7 @@
       "label": "update-book · UC03",
       "sublabel": "PUT /livros/:id",
       "pos": [
-        380,
+        640,
         80
       ],
       "size": [
@@ -107,7 +135,7 @@
       "label": "delete-book · UC04",
       "sublabel": "DELETE /livros/:id",
       "pos": [
-        550,
+        810,
         80
       ],
       "size": [
@@ -121,7 +149,7 @@
       "label": "create-copy · UC13",
       "sublabel": "POST /exemplares",
       "pos": [
-        780,
+        1040,
         80
       ],
       "size": [
@@ -135,7 +163,7 @@
       "label": "search-copies · UC14",
       "sublabel": "GET /exemplares",
       "pos": [
-        950,
+        1210,
         80
       ],
       "size": [
@@ -149,7 +177,7 @@
       "label": "update-copy · UC15",
       "sublabel": "PUT /exemplares/:id",
       "pos": [
-        1120,
+        1380,
         80
       ],
       "size": [
@@ -163,7 +191,7 @@
       "label": "delete-copy · UC16",
       "sublabel": "DELETE /exemplares/:id",
       "pos": [
-        1290,
+        1550,
         80
       ],
       "size": [
@@ -172,12 +200,12 @@
       ]
     },
     {
-      "id": "catalogo",
+      "id": "indice",
       "type": "backend",
-      "label": "books.ts",
-      "sublabel": "livros · BookLimit",
+      "label": "bookIndex.ts",
+      "sublabel": "índice vetorial · KNN",
       "pos": [
-        280,
+        55,
         320
       ],
       "size": [
@@ -187,12 +215,12 @@
       "tag": "infrastructure/"
     },
     {
-      "id": "exemplares",
+      "id": "catalogo",
       "type": "backend",
-      "label": "copies.ts",
-      "sublabel": "cópias · RegistrationNumber",
+      "label": "books.ts",
+      "sublabel": "livros · BookLimit",
       "pos": [
-        1020,
+        540,
         320
       ],
       "size": [
@@ -207,7 +235,7 @@
       "label": "catalogIntegration",
       "sublabel": "CatalogIntegration",
       "pos": [
-        650,
+        910,
         320
       ],
       "size": [
@@ -217,12 +245,56 @@
       "tag": "src/integration"
     },
     {
+      "id": "exemplares",
+      "type": "backend",
+      "label": "copies.ts",
+      "sublabel": "findCopyView · situação",
+      "pos": [
+        1280,
+        320
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "infrastructure/"
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 8",
+      "sublabel": "acervo:livro:* · HNSW",
+      "pos": [
+        55,
+        540
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "dados derivados"
+    },
+    {
+      "id": "gemini",
+      "type": "external",
+      "label": "Gemini API",
+      "sublabel": "embeddings",
+      "pos": [
+        300,
+        540
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
       "sublabel": "inTransaction · Bun.sql",
       "pos": [
-        650,
+        910,
         540
       ],
       "size": [
@@ -232,6 +304,13 @@
     }
   ],
   "boundaries": [
+    {
+      "kind": "region",
+      "label": "features · busca semântica",
+      "wraps": [
+        "uc24"
+      ]
+    },
     {
       "kind": "region",
       "label": "features · livros",
@@ -314,14 +393,14 @@
       "id": "cat-int",
       "from": "catalogo",
       "to": "integracao",
-      "label": "autor",
+      "label": "autor · situação",
       "variant": "dashed"
     },
     {
       "id": "ex-int",
       "from": "exemplares",
       "to": "integracao",
-      "label": "histórico",
+      "label": "situação",
       "variant": "dashed"
     },
     {
@@ -342,9 +421,36 @@
       "id": "int-pg",
       "from": "integracao",
       "to": "pg",
-      "label": "autores · reservas",
+      "label": "autores · reservas · emprestimos",
       "variant": "dashed",
       "labelDy": 24
+    },
+    {
+      "id": "uc24-ind",
+      "from": "uc24",
+      "to": "indice",
+      "label": "KNN",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "ind-redis",
+      "from": "indice",
+      "to": "redis",
+      "label": "vetores",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "ind-gemini",
+      "from": "indice",
+      "to": "gemini",
+      "label": "embeddings",
+      "variant": "dashed"
     }
   ],
   "cards": [
@@ -353,7 +459,8 @@
       "title": "Fatias",
       "items": [
         "Cada route.ts lê o HTTP e chama o caso da sua fatia",
-        "search-books também mantém a busca legada GET /livros/:q"
+        "search-books também mantém a busca legada GET /livros/:q",
+        "UC24 responde em GET /busca-semantica/livros"
       ]
     },
     {
@@ -369,7 +476,16 @@
       "title": "Integração",
       "items": [
         "syncAuthorBookCounts atualiza livros_no_acervo",
-        "copyAvailability consulta reservas e emprestimos"
+        "copyAvailability consulta reservas e emprestimos",
+        "delete-copy usa copyHasHistory para barrar a exclusão"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Índice semântico",
+      "items": [
+        "Derivado do Postgres: some e se reconstrói",
+        "Sem Redis ou sem chave do Gemini, o UC24 responde 503"
       ]
     }
   ]

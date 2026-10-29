@@ -66,7 +66,7 @@
       "sublabel": "lista com filtros",
       "pos": [
         40,
-        80
+        250
       ],
       "size": [
         220,
@@ -79,8 +79,8 @@
       "label": "list-loans/route.ts",
       "sublabel": "GET /emprestimos[/:id]",
       "pos": [
-        360,
-        80
+        330,
+        250
       ],
       "size": [
         240,
@@ -94,8 +94,8 @@
       "label": "shared/http",
       "sublabel": "parseIdFilter · parsePositiveId",
       "pos": [
-        360,
-        270
+        330,
+        440
       ],
       "size": [
         240,
@@ -108,8 +108,8 @@
       "label": "sql",
       "sublabel": "infrastructure/postgres.ts",
       "pos": [
-        710,
-        80
+        520,
+        70
       ],
       "size": [
         240,
@@ -122,8 +122,8 @@
       "label": "ListLoans",
       "sublabel": "extends CirculationUseCase",
       "pos": [
-        1080,
-        80
+        740,
+        250
       ],
       "size": [
         220,
@@ -137,8 +137,8 @@
       "label": "PostgresCirculationLookup",
       "sublabel": "porta CirculationLookup",
       "pos": [
-        740,
-        270
+        725,
+        440
       ],
       "size": [
         250,
@@ -152,8 +152,8 @@
       "label": "PostgresCirculationRepository",
       "sublabel": "porta CirculationRepository",
       "pos": [
-        1250,
-        270
+        1090,
+        250
       ],
       "size": [
         270,
@@ -166,8 +166,8 @@
       "label": "PostgreSQL",
       "sublabel": "só SELECT",
       "pos": [
-        1080,
-        450
+        1115,
+        440
       ],
       "size": [
         220,
@@ -180,6 +180,7 @@
       "kind": "region",
       "label": "modules/circulation",
       "wraps": [
+        "uc",
         "caso",
         "repo"
       ]
@@ -191,7 +192,8 @@
       "from": "ui",
       "to": "uc",
       "label": "① GET ?filtros",
-      "variant": "emphasis"
+      "variant": "emphasis",
+      "labelDy": -26
     },
     {
       "id": "validar",
@@ -205,15 +207,19 @@
       "id": "conectar",
       "from": "uc",
       "to": "conexao",
-      "label": "③ dependências(sql)",
-      "variant": "dashed"
+      "label": "③ circulationDependencies(sql)",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left"
     },
     {
       "id": "executar",
       "from": "conexao",
       "to": "caso",
       "label": "④ portas sem tx",
-      "variant": "dashed"
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "top"
     },
     {
       "id": "detalhes",
@@ -221,26 +227,21 @@
       "to": "consulta",
       "label": "⑥ detalhes por item",
       "variant": "dashed",
-      "fromSide": "bottom",
-      "toSide": "top"
+      "labelDy": 24
     },
     {
       "id": "buscar",
       "from": "caso",
       "to": "repo",
       "label": "⑤ loans()",
-      "variant": "emphasis",
-      "fromSide": "bottom",
-      "toSide": "top"
+      "variant": "emphasis"
     },
     {
       "id": "sel-det",
       "from": "consulta",
       "to": "pg",
       "label": "SELECT",
-      "variant": "dashed",
-      "fromSide": "bottom",
-      "toSide": "top"
+      "variant": "dashed"
     },
     {
       "id": "sel",
@@ -248,8 +249,7 @@
       "to": "pg",
       "label": "SELECT",
       "variant": "emphasis",
-      "fromSide": "bottom",
-      "toSide": "top"
+      "labelDy": 24
     }
   ],
   "cards": [

@@ -14,9 +14,11 @@
           "spa",
           "app",
           "db",
-          "volume"
+          "volume",
+          "redis",
+          "gemini"
         ],
-        "note": "Uma única porta 3000 entrega a interface e a API; o banco só existe na rede do Compose."
+        "note": "Uma única porta 3000 entrega a interface e a API; banco e Redis só existem na rede do Compose, e o Gemini é chamado por HTTPS."
       },
       {
         "id": "desenvolvimento",
@@ -37,7 +39,7 @@
           "test",
           "db"
         ],
-        "note": "O Dockerfile compila o React e empacota o backend; o serviço test usa o banco biblioteca_test."
+        "note": "O Dockerfile compila o React e empacota o backend; test usa biblioteca_test, o prefixo biblioteca_test no Redis e embeddings de hash."
       }
     ]
   },
@@ -120,7 +122,7 @@
       "label": "infra/Dockerfile",
       "sublabel": "build multi-stage",
       "pos": [
-        520,
+        260,
         120
       ],
       "size": [
@@ -156,6 +158,36 @@
         160,
         64
       ]
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 8",
+      "sublabel": "serviço redis · sem volume",
+      "pos": [
+        800,
+        120
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "dados derivados"
+    },
+    {
+      "id": "gemini",
+      "type": "external",
+      "label": "Gemini API",
+      "sublabel": "gemini-embedding-001",
+      "pos": [
+        520,
+        640
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "só com GEMINI_API_KEY"
     }
   ],
   "boundaries": [
@@ -166,7 +198,8 @@
         "app",
         "db",
         "volume",
-        "test"
+        "test",
+        "redis"
       ]
     },
     {
@@ -174,7 +207,8 @@
       "label": "rede interna · sem porta publicada",
       "wraps": [
         "db",
-        "volume"
+        "volume",
+        "redis"
       ]
     }
   ],
@@ -212,7 +246,8 @@
       "to": "app",
       "label": "imagem",
       "variant": "dashed",
-      "labelDy": 24
+      "fromSide": "bottom",
+      "toSide": "top"
     },
     {
       "id": "vite-proxy",
@@ -226,6 +261,23 @@
       "from": "test",
       "to": "db",
       "label": "biblioteca_test"
+    },
+    {
+      "id": "app-redis",
+      "from": "app",
+      "to": "redis",
+      "label": "cache · índice vetorial",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "left"
+    },
+    {
+      "id": "app-gemini",
+      "from": "app",
+      "to": "gemini",
+      "label": "embeddings · HTTPS",
+      "variant": "dashed",
+      "labelDy": 24
     }
   ],
   "cards": [
@@ -242,15 +294,17 @@
       "title": "Backend",
       "items": [
         "Bun + Hono serve /api e o frontend/dist",
-        "Fallback para index.html nas rotas do React"
+        "Fallback para index.html nas rotas do React",
+        "Sem Redis ou sem chave do Gemini, só a busca semântica para (503)"
       ]
     },
     {
       "dot": "violet",
       "title": "Infra",
       "items": [
-        "Compose: app, db e test (profile)",
-        "PostgreSQL sem porta exposta; dados no volume pgdata"
+        "Compose: app, db, redis e test (profile)",
+        "PostgreSQL e Redis sem porta exposta",
+        "Só o Postgres tem volume (pgdata); o Redis guarda dados derivados"
       ]
     }
   ]

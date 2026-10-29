@@ -13,10 +13,10 @@
           "api",
           "uc-circ",
           "mod-circ",
-          "adapters",
+          "int-circ",
           "pg"
         ],
-        "note": "POST /emprestimos: register-loan/route.ts abre inTransaction e monta RegisterLoan com circulationDependencies."
+        "note": "POST /emprestimos: register-loan/route.ts abre inTransaction; circulationDependencies traz a porta de src/integration."
       },
       {
         "id": "modulos",
@@ -27,17 +27,33 @@
           "mod-leitores",
           "mod-circ"
         ],
-        "note": "Cada módulo é dono das suas tabelas; check-boundaries.ts barra imports e SQL cruzados."
+        "note": "Cada módulo é dono das suas tabelas e das suas chaves no Redis; check-boundaries.ts barra imports, SQL e chaves cruzados."
       },
       {
         "id": "integracao",
         "label": "Integração entre módulos",
         "focus": [
-          "adapters",
-          "pg",
-          "uc-circ"
+          "mod-acervo",
+          "mod-autoria",
+          "mod-leitores",
+          "mod-circ",
+          "int-acervo",
+          "int-autoria",
+          "int-leitores",
+          "int-circ"
         ],
-        "note": "SQL que atravessa módulos fica em src/integration, nunca dentro dos módulos."
+        "note": "Cada módulo recebe de src/integration a implementação da sua porta: o SQL que atravessa módulos e os avisos depois do COMMIT."
+      },
+      {
+        "id": "dados-derivados",
+        "label": "Redis e Gemini",
+        "focus": [
+          "mod-acervo",
+          "mod-autoria",
+          "redis",
+          "gemini"
+        ],
+        "note": "O Redis guarda só dados derivados: o cache da busca de autores (UC06) e o índice vetorial do UC24, com embeddings do Gemini."
       }
     ],
     "legend": {
@@ -49,7 +65,10 @@
           "label": "Módulo / API"
         },
         "messagebus": {
-          "label": "Integração entre módulos"
+          "label": "Integração entre módulos (src/integration)"
+        },
+        "external": {
+          "label": "Serviço externo"
         }
       }
     }
@@ -61,7 +80,7 @@
       "label": "Hono /api",
       "sublabel": "server.ts · composition.ts",
       "pos": [
-        465,
+        740,
         70
       ],
       "size": [
@@ -74,13 +93,13 @@
       "id": "uc-acervo",
       "type": "frontend",
       "label": "catalog/features",
-      "sublabel": "UC01–04 · UC13–16",
+      "sublabel": "UC01–04 · UC13–16 · UC24",
       "pos": [
-        60,
+        260,
         250
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -90,11 +109,11 @@
       "label": "authorship/features",
       "sublabel": "UC05–08",
       "pos": [
-        330,
+        740,
         250
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -104,11 +123,11 @@
       "label": "readers/features",
       "sublabel": "UC09–12",
       "pos": [
-        600,
+        990,
         250
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -118,11 +137,11 @@
       "label": "circulation/features",
       "sublabel": "UC17–22",
       "pos": [
-        870,
+        1240,
         250
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -132,11 +151,11 @@
       "label": "modules/catalog",
       "sublabel": "livros · exemplares",
       "pos": [
-        60,
+        260,
         400
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -146,11 +165,11 @@
       "label": "modules/authorship",
       "sublabel": "autores",
       "pos": [
-        330,
+        740,
         400
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -160,11 +179,11 @@
       "label": "modules/readers",
       "sublabel": "leitores",
       "pos": [
-        600,
+        990,
         400
       ],
       "size": [
-        200,
+        180,
         64
       ]
     },
@@ -174,21 +193,7 @@
       "label": "modules/circulation",
       "sublabel": "reservas · emprestimos",
       "pos": [
-        870,
-        400
-      ],
-      "size": [
-        200,
-        64
-      ]
-    },
-    {
-      "id": "adapters",
-      "type": "messagebus",
-      "label": "src/integration",
-      "sublabel": "SQL entre módulos",
-      "pos": [
-        1140,
+        1240,
         400
       ],
       "size": [
@@ -197,13 +202,102 @@
       ]
     },
     {
+      "id": "gemini",
+      "type": "external",
+      "label": "Gemini API",
+      "sublabel": "embeddings",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "redis",
+      "type": "database",
+      "label": "Redis 8",
+      "sublabel": "cache · índice vetorial",
+      "pos": [
+        510,
+        400
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "dados derivados"
+    },
+    {
+      "id": "int-acervo",
+      "type": "messagebus",
+      "label": "catalogIntegration",
+      "sublabel": "CatalogIntegration",
+      "pos": [
+        177,
+        540
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "src/integration"
+    },
+    {
+      "id": "int-autoria",
+      "type": "messagebus",
+      "label": "authorshipIntegration",
+      "sublabel": "AuthorshipIntegration",
+      "pos": [
+        643,
+        540
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "src/integration"
+    },
+    {
+      "id": "int-leitores",
+      "type": "messagebus",
+      "label": "PostgresReaderHistory",
+      "sublabel": "ReaderHistory",
+      "pos": [
+        1107,
+        540
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "tag": "src/integration"
+    },
+    {
+      "id": "int-circ",
+      "type": "messagebus",
+      "label": "PostgresCirculationLookup",
+      "sublabel": "CirculationLookup",
+      "pos": [
+        1357,
+        540
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "src/integration"
+    },
+    {
       "id": "pg",
       "type": "database",
       "label": "PostgreSQL",
       "sublabel": "infrastructure · inTransaction",
       "pos": [
-        465,
-        580
+        740,
+        780
       ],
       "size": [
         200,
@@ -299,13 +393,6 @@
       "variant": "emphasis"
     },
     {
-      "id": "circ-adapters",
-      "from": "uc-circ",
-      "to": "adapters",
-      "label": "dependências",
-      "variant": "dashed"
-    },
-    {
       "id": "acervo-pg",
       "from": "mod-acervo",
       "to": "pg",
@@ -334,10 +421,53 @@
       "toSide": "top"
     },
     {
-      "id": "adapters-pg",
-      "from": "adapters",
-      "to": "pg",
-      "label": "consultas cruzadas",
+      "id": "acervo-int",
+      "from": "mod-acervo",
+      "to": "int-acervo",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "autoria-int",
+      "from": "mod-autoria",
+      "to": "int-autoria",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "leitores-int",
+      "from": "mod-leitores",
+      "to": "int-leitores",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "circ-int",
+      "from": "mod-circ",
+      "to": "int-circ",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "acervo-redis",
+      "from": "mod-acervo",
+      "to": "redis",
+      "variant": "dashed"
+    },
+    {
+      "id": "autoria-redis",
+      "from": "mod-autoria",
+      "to": "redis",
+      "variant": "dashed"
+    },
+    {
+      "id": "acervo-gemini",
+      "from": "mod-acervo",
+      "to": "gemini",
       "variant": "dashed"
     }
   ],
@@ -363,8 +493,16 @@
       "dot": "amber",
       "title": "Fronteiras",
       "items": [
-        "check-boundaries.ts barra imports e SQL cruzados",
+        "check-boundaries.ts barra imports, SQL e chaves Redis cruzados",
         "Uma fatia não importa outra; só os testes podem"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Dados derivados",
+      "items": [
+        "Redis sem volume: some e se reconstrói a partir do Postgres",
+        "Depois do COMMIT, a integração avisa o outro módulo"
       ]
     }
   ]
