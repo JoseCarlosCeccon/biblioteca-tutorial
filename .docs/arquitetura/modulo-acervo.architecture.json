@@ -1,0 +1,376 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Módulo Acervo — fatias verticais",
+    "output": "modulo-acervo.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Fatia vertical (ucNN.ts)"
+        },
+        "backend": {
+          "label": "Código do módulo"
+        },
+        "messagebus": {
+          "label": "Adapter de integração"
+        }
+      }
+    },
+    "views": [
+      {
+        "id": "livros",
+        "label": "Fatias de livros",
+        "focus": [
+          "uc01",
+          "uc02",
+          "uc03",
+          "uc04",
+          "catalogo",
+          "pg"
+        ],
+        "note": "uc01–04 registram rotas de /livros e delegam a catalogo.ts e às funções de livro."
+      },
+      {
+        "id": "exemplares",
+        "label": "Fatias de exemplares",
+        "focus": [
+          "uc13",
+          "uc14",
+          "uc15",
+          "uc16",
+          "exemplares",
+          "pg"
+        ],
+        "note": "uc13–16 cuidam das cópias físicas; o número de registro vem de acervo_sequencias."
+      },
+      {
+        "id": "integracao",
+        "label": "Dados de outros módulos",
+        "focus": [
+          "catalogo",
+          "exemplares",
+          "integracao",
+          "pg"
+        ],
+        "note": "Autor, disponibilidade e histórico chegam pela porta IntegracaoDoCatalogo, implementada em src/adapters."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "uc01",
+      "type": "frontend",
+      "label": "uc01 Cadastrar",
+      "sublabel": "POST /livros",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc02",
+      "type": "frontend",
+      "label": "uc02 Buscar",
+      "sublabel": "GET /livros",
+      "pos": [
+        210,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc03",
+      "type": "frontend",
+      "label": "uc03 Atualizar",
+      "sublabel": "PUT /livros/:id",
+      "pos": [
+        380,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc04",
+      "type": "frontend",
+      "label": "uc04 Excluir",
+      "sublabel": "DELETE /livros/:id",
+      "pos": [
+        550,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc13",
+      "type": "frontend",
+      "label": "uc13 Cadastrar",
+      "sublabel": "POST /exemplares",
+      "pos": [
+        780,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc14",
+      "type": "frontend",
+      "label": "uc14 Buscar",
+      "sublabel": "GET /exemplares",
+      "pos": [
+        950,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc15",
+      "type": "frontend",
+      "label": "uc15 Atualizar",
+      "sublabel": "PUT /exemplares/:id",
+      "pos": [
+        1120,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "uc16",
+      "type": "frontend",
+      "label": "uc16 Excluir",
+      "sublabel": "DELETE /exemplares/:id",
+      "pos": [
+        1290,
+        80
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "catalogo",
+      "type": "backend",
+      "label": "catalogo.ts",
+      "sublabel": "livros · LimiteDeLivros",
+      "pos": [
+        280,
+        320
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "+ buscar/atualizar/excluir"
+    },
+    {
+      "id": "exemplares",
+      "type": "backend",
+      "label": "exemplares.ts",
+      "sublabel": "cópias · NumeroRegistro",
+      "pos": [
+        1020,
+        320
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "+ buscar/atualizar/excluir"
+    },
+    {
+      "id": "integracao",
+      "type": "messagebus",
+      "label": "acervoIntegracao",
+      "sublabel": "IntegracaoDoCatalogo",
+      "pos": [
+        650,
+        320
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "src/adapters"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "emTransacao · Bun.sql",
+      "pos": [
+        650,
+        540
+      ],
+      "size": [
+        180,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "use-cases · livros",
+      "wraps": [
+        "uc01",
+        "uc02",
+        "uc03",
+        "uc04"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "use-cases · exemplares",
+      "wraps": [
+        "uc13",
+        "uc14",
+        "uc15",
+        "uc16"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "uc01-cat",
+      "from": "uc01",
+      "to": "catalogo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc02-cat",
+      "from": "uc02",
+      "to": "catalogo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc03-cat",
+      "from": "uc03",
+      "to": "catalogo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc04-cat",
+      "from": "uc04",
+      "to": "catalogo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc13-ex",
+      "from": "uc13",
+      "to": "exemplares",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc14-ex",
+      "from": "uc14",
+      "to": "exemplares",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc15-ex",
+      "from": "uc15",
+      "to": "exemplares",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc16-ex",
+      "from": "uc16",
+      "to": "exemplares",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "cat-int",
+      "from": "catalogo",
+      "to": "integracao",
+      "label": "autor",
+      "variant": "dashed"
+    },
+    {
+      "id": "ex-int",
+      "from": "exemplares",
+      "to": "integracao",
+      "label": "histórico",
+      "variant": "dashed"
+    },
+    {
+      "id": "cat-pg",
+      "from": "catalogo",
+      "to": "pg",
+      "label": "livros",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ex-pg",
+      "from": "exemplares",
+      "to": "pg",
+      "label": "exemplares",
+      "variant": "emphasis"
+    },
+    {
+      "id": "int-pg",
+      "from": "integracao",
+      "to": "pg",
+      "label": "autores · reservas",
+      "variant": "dashed",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Fatias",
+      "items": [
+        "Cada ucNN.ts registra a rota e chama uma função do módulo",
+        "uc01 também mantém a busca legada GET /livros/:q"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Domínio",
+      "items": [
+        "Isbn, NumeroRegistro e LimiteDeLivros em domain/",
+        "Exemplar sempre ligado a um livro do catálogo"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Integração",
+      "items": [
+        "sincronizarAutores atualiza livros_no_acervo",
+        "disponibilidade consulta reservas e emprestimos"
+      ]
+    }
+  ]
+}

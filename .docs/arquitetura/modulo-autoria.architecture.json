@@ -1,0 +1,334 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Módulo Autoria — fatias verticais",
+    "output": "modulo-autoria.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Fatia vertical (ucNN.ts)"
+        },
+        "backend": {
+          "label": "Código do módulo"
+        },
+        "messagebus": {
+          "label": "Adapter / evento"
+        }
+      }
+    },
+    "views": [
+      {
+        "id": "fatias",
+        "label": "Fatias de autores",
+        "focus": [
+          "uc05",
+          "uc06",
+          "uc07",
+          "uc08",
+          "cadastro",
+          "pg"
+        ],
+        "note": "uc05–08 usam cadastro.ts para validar, gravar e ler a tabela autores."
+      },
+      {
+        "id": "contagem",
+        "label": "Contagem de livros",
+        "focus": [
+          "cadastro",
+          "integracao",
+          "pg"
+        ],
+        "note": "Busca, edição e exclusão contam livros do autor pela porta IntegracaoDaAutoria."
+      },
+      {
+        "id": "projecao",
+        "label": "Projeção por evento",
+        "focus": [
+          "bus",
+          "projecao",
+          "repo",
+          "consulta",
+          "pg"
+        ],
+        "note": "LivroCatalogado, publicado pelo Acervo, atualiza a projeção de livros de cada autor."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "uc05",
+      "type": "frontend",
+      "label": "uc05 Cadastrar",
+      "sublabel": "POST /autores",
+      "pos": [
+        60,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "uc06",
+      "type": "frontend",
+      "label": "uc06 Buscar",
+      "sublabel": "GET /autores",
+      "pos": [
+        260,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "uc07",
+      "type": "frontend",
+      "label": "uc07 Atualizar",
+      "sublabel": "PUT /autores/:id",
+      "pos": [
+        460,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "uc08",
+      "type": "frontend",
+      "label": "uc08 Excluir",
+      "sublabel": "DELETE /autores/:id",
+      "pos": [
+        660,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "cadastro",
+      "type": "backend",
+      "label": "cadastro.ts",
+      "sublabel": "dadosDoAutor · categorias",
+      "pos": [
+        345,
+        300
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "tag": "+ buscar/atualizar/excluir"
+    },
+    {
+      "id": "integracao",
+      "type": "messagebus",
+      "label": "autoriaIntegracao",
+      "sublabel": "IntegracaoDaAutoria",
+      "pos": [
+        680,
+        300
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "tag": "src/adapters"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "tabela autores",
+      "pos": [
+        345,
+        520
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "LivroCatalogado",
+      "pos": [
+        1000,
+        80
+      ],
+      "size": [
+        180,
+        64
+      ],
+      "tag": "vem do Acervo"
+    },
+    {
+      "id": "projecao",
+      "type": "backend",
+      "label": "ProjecaoDeLivros",
+      "sublabel": "registrarEntrada",
+      "pos": [
+        1000,
+        300
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "repo",
+      "type": "backend",
+      "label": "PostgresAutorRepository",
+      "sublabel": "AutorRepository",
+      "pos": [
+        990,
+        520
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "consulta",
+      "type": "messagebus",
+      "label": "AutoriaComoConsulta",
+      "sublabel": "ConsultaDeAutoria",
+      "pos": [
+        1260,
+        520
+      ],
+      "size": [
+        190,
+        64
+      ],
+      "tag": "src/adapters"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "src/use-cases",
+      "wraps": [
+        "uc05",
+        "uc06",
+        "uc07",
+        "uc08"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "uc05-cad",
+      "from": "uc05",
+      "to": "cadastro",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc06-cad",
+      "from": "uc06",
+      "to": "cadastro",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc07-cad",
+      "from": "uc07",
+      "to": "cadastro",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "uc08-cad",
+      "from": "uc08",
+      "to": "cadastro",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "cad-int",
+      "from": "cadastro",
+      "to": "integracao",
+      "label": "contarLivros",
+      "variant": "dashed"
+    },
+    {
+      "id": "cad-pg",
+      "from": "cadastro",
+      "to": "pg",
+      "label": "autores",
+      "variant": "emphasis",
+      "labelDy": 24
+    },
+    {
+      "id": "int-pg",
+      "from": "integracao",
+      "to": "pg",
+      "label": "COUNT livros",
+      "variant": "dashed"
+    },
+    {
+      "id": "bus-proj",
+      "from": "bus",
+      "to": "projecao",
+      "label": "assina",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "id": "proj-repo",
+      "from": "projecao",
+      "to": "repo"
+    },
+    {
+      "id": "repo-pg",
+      "from": "repo",
+      "to": "pg",
+      "label": "autores"
+    },
+    {
+      "id": "consulta-repo",
+      "from": "consulta",
+      "to": "repo",
+      "label": "lê"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Fatias",
+      "items": [
+        "uc05–08 chamam cadastrarAutor, buscarAutores, atualizarAutor e excluirAutor",
+        "Excluir recusa autor com livros vinculados"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Domínio",
+      "items": [
+        "Autor do tipo literatura ou didático",
+        "Edição não reduz a categoria abaixo dos livros existentes"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Contratos públicos",
+      "items": [
+        "index.ts exporta só ConsultaDeAutores e ProjecaoDeLivros",
+        "AutoriaComoConsulta atende o Acervo sem expor Autor"
+      ]
+    }
+  ]
+}

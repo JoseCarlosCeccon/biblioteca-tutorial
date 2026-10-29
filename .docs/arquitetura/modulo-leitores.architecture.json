@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Módulo Leitores — fatias verticais",
+    "output": "modulo-leitores.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Fatia vertical (ucNN.ts)"
+        },
+        "backend": {
+          "label": "Código do módulo"
+        },
+        "messagebus": {
+          "label": "Adapter de integração"
+        }
+      }
+    },
+    "views": [
+      {
+        "id": "fatias",
+        "label": "Uma classe por fatia",
+        "focus": [
+          "uc09",
+          "uc10",
+          "uc11",
+          "uc12",
+          "cadastrar",
+          "buscar",
+          "atualizar",
+          "excluir"
+        ],
+        "note": "Cada ucNN.ts instancia o caso de uso de domain/ com o repositório Postgres."
+      },
+      {
+        "id": "persistencia",
+        "label": "Persistência",
+        "focus": [
+          "cadastrar",
+          "buscar",
+          "atualizar",
+          "excluir",
+          "repo",
+          "pg"
+        ],
+        "note": "Todas as classes dependem da porta RepositorioLeitores, implementada por LeitoresPostgres."
+      },
+      {
+        "id": "historico",
+        "label": "Exclusão com histórico",
+        "focus": [
+          "uc12",
+          "excluir",
+          "historico",
+          "pg"
+        ],
+        "note": "ExcluirLeitor só apaga leitor sem reservas nem empréstimos, consultados por um adapter."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "uc09",
+      "type": "frontend",
+      "label": "uc09 Cadastrar",
+      "sublabel": "POST /leitores",
+      "pos": [
+        60,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "uc10",
+      "type": "frontend",
+      "label": "uc10 Buscar",
+      "sublabel": "GET /leitores",
+      "pos": [
+        300,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "uc11",
+      "type": "frontend",
+      "label": "uc11 Atualizar",
+      "sublabel": "PUT /leitores/:id",
+      "pos": [
+        540,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "uc12",
+      "type": "frontend",
+      "label": "uc12 Excluir",
+      "sublabel": "DELETE /leitores/:id",
+      "pos": [
+        780,
+        60
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "cadastrar",
+      "type": "backend",
+      "label": "CadastrarLeitor",
+      "sublabel": "CPF único",
+      "pos": [
+        60,
+        220
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "buscar",
+      "type": "backend",
+      "label": "BuscarLeitores",
+      "sublabel": "nome · CPF · id",
+      "pos": [
+        300,
+        220
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "atualizar",
+      "type": "backend",
+      "label": "AtualizarLeitor",
+      "sublabel": "mantém CPF próprio",
+      "pos": [
+        540,
+        220
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "excluir",
+      "type": "backend",
+      "label": "ExcluirLeitor",
+      "sublabel": "só sem histórico",
+      "pos": [
+        780,
+        220
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "repo",
+      "type": "backend",
+      "label": "LeitoresPostgres",
+      "sublabel": "RepositorioLeitores",
+      "pos": [
+        300,
+        390
+      ],
+      "size": [
+        180,
+        64
+      ]
+    },
+    {
+      "id": "historico",
+      "type": "messagebus",
+      "label": "LeitorHistoricoPostgres",
+      "sublabel": "HistoricoDoLeitor",
+      "pos": [
+        1050,
+        390
+      ],
+      "size": [
+        200,
+        64
+      ],
+      "tag": "src/adapters"
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "tabela leitores",
+      "pos": [
+        640,
+        560
+      ],
+      "size": [
+        180,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "src/use-cases",
+      "wraps": [
+        "uc09",
+        "uc10",
+        "uc11",
+        "uc12"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "modules/leitores",
+      "wraps": [
+        "cadastrar",
+        "buscar",
+        "atualizar",
+        "excluir",
+        "repo"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "uc09-c",
+      "from": "uc09",
+      "to": "cadastrar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "uc10-b",
+      "from": "uc10",
+      "to": "buscar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "uc11-a",
+      "from": "uc11",
+      "to": "atualizar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "uc12-e",
+      "from": "uc12",
+      "to": "excluir",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-repo",
+      "from": "cadastrar",
+      "to": "repo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "b-repo",
+      "from": "buscar",
+      "to": "repo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "a-repo",
+      "from": "atualizar",
+      "to": "repo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e-repo",
+      "from": "excluir",
+      "to": "repo",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "e-hist",
+      "from": "excluir",
+      "to": "historico",
+      "label": "tem histórico?",
+      "variant": "dashed"
+    },
+    {
+      "id": "repo-pg",
+      "from": "repo",
+      "to": "pg",
+      "label": "leitores"
+    },
+    {
+      "id": "hist-pg",
+      "from": "historico",
+      "to": "pg",
+      "label": "reservas · emprestimos",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Fatias",
+      "items": [
+        "uc09–12 traduzem HTTP com circulacaoHttp e chamam uma classe",
+        "Erros de domínio viram 400, 404 ou 409 no server.ts"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Domínio",
+      "items": [
+        "Leitor normaliza CPF, e-mail, nome e telefone",
+        "CPF com dígito verificador e sem duplicidade"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Portas",
+      "items": [
+        "RepositorioLeitores e HistoricoDoLeitor ficam em domain/",
+        "Testes usam dublês em memória das duas portas"
+      ]
+    }
+  ]
+}
