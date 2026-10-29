@@ -120,11 +120,10 @@ bun .docs/use-cases/preparar.ts uc05
 ```
 
 Troque `uc05` pela atividade atribuída. Somente `maroquio` pode atualizar ou
-integrar PRs na branch central. A implementação completa validada está na branch
-`saas-evolution/fase01-teste`; as instruções de validação ficam em `qa/README.md`
-nessa branch.
+integrar PRs na branch central. A implementação completa dos 23 casos está
+integrada em `saas-evolution/fase01`.
 
-O UC23 implementa um seed manual e idempotente. Na referência completa, abra
+O UC23 implementa um seed manual e idempotente. Abra
 `/livros/seed` ou execute `docker compose -f infra/compose.yaml exec -T app bun src/seed.ts`.
 O catálogo tem fontes bibliográficas; os leitores são fictícios. A distribuição
 de circulação é descrita no [tutorial UC23](.docs/use-cases/uc23.html).

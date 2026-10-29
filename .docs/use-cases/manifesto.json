@@ -1,6 +1,5 @@
 {
   "base": "saas-evolution/fase01",
-  "referencia": "saas-evolution/fase01-teste",
   "commitInicial": "0920d3b990fbefb7441b099e7cde4b95700029e6",
   "ondas": [
     [

@@ -34,3 +34,4 @@ export async function cadastrarAutor(body: unknown): Promise<AutorCadastrado> {
     return { ...row!, livrosNoAcervo: 0 };
   });
 }
+

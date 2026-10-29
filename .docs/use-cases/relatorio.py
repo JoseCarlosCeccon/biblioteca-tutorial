@@ -53,7 +53,7 @@ if replay:
     completo = aprovados == 23 and len(replay["casos"]) == 23 and bool(replay.get("fim"))
     linhas.append(("Reprodução isolada dos tutoriais", f"{aprovados}/23 atividades aprovadas", "Aprovado" if completo else "Em verificação"))
 
-corpo = '<header class="capa"><h1>Relatório de validação</h1><p>Resultados da implementação de referência na branch <code>saas-evolution/fase01-teste</code>. Os dados abaixo são derivados dos relatórios gerados pelas ferramentas.</p></header>'
+corpo = '<header class="capa"><h1>Relatório de validação</h1><p>Resultados da implementação de referência, hoje integrada em <code>saas-evolution/fase01</code>. Os dados abaixo são derivados dos relatórios gerados pelas ferramentas.</p></header>'
 corpo += '<section class="secao"><h2>Resultados registrados</h2><div class="tabela"><table><thead><tr><th>Verificação</th><th>Resultado</th><th>Situação</th></tr></thead><tbody>'
 for nome, resultado, situacao in linhas:
     corpo += f'<tr><td>{gerador.esc(nome)}</td><td>{gerador.esc(resultado)}</td><td>{gerador.esc(situacao)}</td></tr>'

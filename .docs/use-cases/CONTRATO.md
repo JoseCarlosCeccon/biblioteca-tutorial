@@ -1,6 +1,6 @@
 # Contrato dos tutoriais e da implementação de referência
 
-Base: `saas-evolution/fase01`, commit `0920d3b`. Referência executável: `saas-evolution/fase01-teste`.
+Base: `saas-evolution/fase01`, commit `0920d3b`. A implementação completa está integrada nessa mesma branch.
 
 ## Organização
 
