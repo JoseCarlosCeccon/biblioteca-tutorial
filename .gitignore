@@ -53,3 +53,6 @@ backend/data/*.csv
 
 # Cache dos geradores Python
 __pycache__/
+
+# Worktrees locais
+.worktrees/
